@@ -18,25 +18,17 @@ public class PongGame implements ApplicationListener
 	Ball ball;
 
 	@Override
-	public void create() {
+	public void create() 
+	{
 		batch = new SpriteBatch();
 		
 		initializeBall();
-				
-		paddleLeft = new Paddle(new Color(1,0,0,1), new Vector2(0,200));
-		paddleLeft.enableInput();
-		
-		paddleRight = new Paddle(new Color(0,1,0,1), new Vector2(Gdx.app.getGraphics().getWidth()-20,200));
+		initializePaddles();		
 	}
 
 	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void render() {
+	public void render() 
+	{
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		float delta = Gdx.graphics.getDeltaTime();
@@ -52,23 +44,20 @@ public class PongGame implements ApplicationListener
 		
 		batch.end();
 	}
-
+	@Override
+	public void resize(int width, int height) {		
+	}
+	
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	private void initializeBall()
@@ -77,5 +66,15 @@ public class PongGame implements ApplicationListener
 		Vector2 velocity = new Vector2(100, 100*MathUtils.randomSign());
 		
 		ball = new Ball(position, velocity);
+	}
+	
+	private void initializePaddles()
+	{
+		// Left paddle
+		paddleLeft = new Paddle(new Color(1,0,0,1), new Vector2(0,200));
+		paddleLeft.enableInput();
+		
+		// Right paddle
+		paddleRight = new Paddle(new Color(0,1,0,1), new Vector2(Gdx.app.getGraphics().getWidth()-20,200));
 	}
 }
