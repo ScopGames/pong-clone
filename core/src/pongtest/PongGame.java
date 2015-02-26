@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class PongGame implements ApplicationListener
@@ -20,8 +21,8 @@ public class PongGame implements ApplicationListener
 	public void create() {
 		batch = new SpriteBatch();
 		
-		ball = new Ball();
-		
+		initializeBall();
+				
 		paddleLeft = new Paddle(new Color(1,0,0,1), new Vector2(0,200));
 		paddleLeft.enableInput();
 		
@@ -38,13 +39,15 @@ public class PongGame implements ApplicationListener
 	public void render() {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
+		float delta = Gdx.graphics.getDeltaTime();
 		batch.begin();
 		
-		paddleLeft.update(Gdx.graphics.getDeltaTime());
+		paddleLeft.update(delta);
 		paddleLeft.draw(batch);
-		paddleRight.update(Gdx.graphics.getDeltaTime());
+		paddleRight.update(delta);
 		paddleRight.draw(batch);
 		
+		ball.update(delta);
 		ball.draw(batch);
 		
 		batch.end();
@@ -66,5 +69,13 @@ public class PongGame implements ApplicationListener
 	public void dispose() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private void initializeBall()
+	{
+		Vector2 position = new Vector2(MathUtils.random(200), MathUtils.random(250));
+		Vector2 velocity = new Vector2(100, 100*MathUtils.randomSign());
+		
+		ball = new Ball(position, velocity);
 	}
 }

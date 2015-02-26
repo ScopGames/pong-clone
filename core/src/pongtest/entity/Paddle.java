@@ -48,7 +48,7 @@ public class Paddle extends Sprite
 	 * @param delta
 	 */
 	private void handleInput(float delta) 
-	{		
+	{				
 		if (Gdx.input.isKeyPressed(Keys.W) && getY()+height < Gdx.graphics.getHeight()) 
 		{
 			setPosition(getX(), getY()+delta*movement);
