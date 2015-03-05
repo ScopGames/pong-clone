@@ -1,7 +1,5 @@
 package pongtest.ui;
 
-import pongtest.ui.Score.players;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,7 +9,6 @@ public class Score
 	public enum players {PLAYER1, PLAYER2};
 	
 	private int score1 = 0, score2 = 0;
-	
 	private BitmapFont font;
 	
 	public Score()
@@ -40,7 +37,7 @@ public class Score
 	{
 		String scoreStr = score1 + " : " + score2;
 		
-		font.draw(batch, scoreStr, Gdx.graphics.getWidth()/2 - 20, Gdx.graphics.getHeight()-10);
+		font.draw(batch, scoreStr, Gdx.graphics.getWidth()/2 - 20, Gdx.graphics.getHeight() - 10);
 	}
 
 	public int getScore(players player) {
