@@ -25,17 +25,28 @@ public class Ball extends Sprite
 		this.velocity = velocity;
 	}
 	
-	public void update(float delta)
+	public void update(float delta, Paddle paddleL, Paddle paddleR)
 	{
 		if (collisionTop() || collisionBottom())
 		{
 			// invert the direction on the y axis
 			velocity.y = -velocity.y;
 		}
+		
+		if (collisionPaddle(paddleL) || collisionPaddle(paddleR))
+		{
+			velocity.x = -velocity.x;
+		}
 			
 		setPosition(getX() + velocity.x*delta, getY() + velocity.y*delta);
 	}
 	
+	private boolean collisionPaddle(Paddle paddle) {
+		boolean collision = false;
+		
+		return paddle.getBoundingRectangle().overlaps(this.getBoundingRectangle());
+	}
+
 	private boolean collisionBottom()
 	{
 		boolean collision = false;
@@ -49,8 +60,9 @@ public class Ball extends Sprite
 	private boolean collisionTop()
 	{
 		boolean collision = false;
+		float screenHeight = Gdx.graphics.getHeight();
 		
-		if (getY() + height >= Gdx.graphics.getHeight())
+		if (getY() + height >= screenHeight)
 			collision = true;
 		
 		return collision;
