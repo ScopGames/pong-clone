@@ -31,19 +31,29 @@ public class PongGame implements ApplicationListener
 	{
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		float delta = Gdx.graphics.getDeltaTime();
 		batch.begin();
 		
-		paddleLeft.update(delta);
-		paddleLeft.draw(batch);
-		paddleRight.update(delta);
-		paddleRight.draw(batch);
-		
-		ball.update(delta);
-		ball.draw(batch);
-		
+		updateGameEntities();
+		drawGameEntities();
+			
 		batch.end();
 	}
+	
+	private void updateGameEntities() {
+		float delta = Gdx.graphics.getDeltaTime();
+		
+		paddleLeft.update(delta);
+		paddleRight.update(delta);
+		
+		ball.update(delta, paddleLeft, paddleRight);
+	}
+	
+	private void drawGameEntities() {
+		paddleLeft.draw(batch);
+		paddleRight.draw(batch);
+		ball.draw(batch);
+	}
+	
 	@Override
 	public void resize(int width, int height) {		
 	}
@@ -76,5 +86,6 @@ public class PongGame implements ApplicationListener
 		
 		// Right paddle
 		paddleRight = new Paddle(new Color(0,1,0,1), new Vector2(Gdx.app.getGraphics().getWidth()-20,200));
+		paddleRight.enableInput();
 	}
 }
