@@ -37,25 +37,18 @@ public class Paddle extends Sprite
 		this.inputEnabled = true;
 	}
 	
-	public void update(float delta)
-	{
-		if (inputEnabled)
-			handleInput(delta);
-	}
+//	public void update(float delta)
+//	{
+//		
+//	}
 	
-	/**
-	 * 
-	 * @param delta
-	 */
-	private void handleInput(float delta) 
-	{				
-		if (Gdx.input.isKeyPressed(Keys.W) && getY()+height < Gdx.graphics.getHeight()) 
-		{
-			setPosition(getX(), getY()+delta*movement);
-		}
-		else if (Gdx.input.isKeyPressed(Keys.S) && getY() >= 0)
-		{
-			setPosition(getX(), getY()-delta*movement);
-		}
+	public void moveUp(float delta) 
+	{
+		setPosition(getX(), getY() + delta*movement);		
+	}
+
+	public void moveDown(float delta) 
+	{
+		setPosition(getX(), getY() - delta*movement);
 	}
 }
