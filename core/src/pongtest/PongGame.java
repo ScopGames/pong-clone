@@ -2,6 +2,8 @@ package pongtest;
 
 import pongtest.entity.Ball;
 import pongtest.entity.Paddle;
+import pongtest.ui.Score;
+import pongtest.ui.Score.players;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -13,17 +15,20 @@ import com.badlogic.gdx.math.Vector2;
 
 public class PongGame implements ApplicationListener
 {
-	SpriteBatch batch;
-	Paddle paddleLeft, paddleRight;
-	Ball ball,b,b2;
+	private SpriteBatch batch;
+	private Paddle paddleLeft, paddleRight;
+	private Ball ball;
+	private Score score;
 
 	@Override
 	public void create() 
 	{
 		batch = new SpriteBatch();
 		
+		score = new Score();
+		
+		initializePaddles();
 		initializeBall();
-		initializePaddles();		
 	}
 
 	@Override
@@ -35,14 +40,22 @@ public class PongGame implements ApplicationListener
 		
 		updateGameEntities();
 		drawGameEntities();
-		
-		if (ballLost())
-			initializeBall();
 				
+		score.render(batch);
+						
 		batch.end();
 	}
 	
-	private boolean ballLost() {
+	private void updateUI()
+	{
+		if (ball.getVelocity().x < 0f)
+			score.addPoint(players.PLAYER2);
+		else
+			score.addPoint(players.PLAYER1);
+	}
+
+	private boolean ballLost() 
+	{
 		boolean lost = false;
 		
 		float x = ball.getX();
@@ -53,13 +66,20 @@ public class PongGame implements ApplicationListener
 		return lost;
 	}
 
-	private void updateGameEntities() {
+	private void updateGameEntities() 
+	{
 		float delta = Gdx.graphics.getDeltaTime();
 		
 		paddleLeft.update(delta);
 		paddleRight.update(delta);
 		
 		ball.update(delta, paddleLeft, paddleRight);
+		
+		if (ballLost())
+		{
+			updateUI();
+			initializeBall();
+		}
 	}
 	
 	private void drawGameEntities() {
@@ -88,7 +108,8 @@ public class PongGame implements ApplicationListener
 	{
 		float speed = 250;
 		
-		Vector2 position = new Vector2(MathUtils.random(200), MathUtils.random(250));
+		float paddleWidth = paddleLeft.getWidth();
+		Vector2 position = new Vector2(paddleWidth + MathUtils.random(200), MathUtils.random(Gdx.graphics.getHeight()-50));
 		Vector2 velocity = new Vector2(speed, speed*MathUtils.randomSign());
 		
 		ball = new Ball(position, velocity);

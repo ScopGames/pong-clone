@@ -13,6 +13,7 @@ public class Ball extends Sprite
 	private int width = 50;
 	private int height = 50;
 	private Vector2 velocity;
+	
 	private boolean overlapped = false;
 	//private rotationSpeed = 0;
 	
@@ -34,7 +35,6 @@ public class Ball extends Sprite
 		if (!overlapped && (collisionPaddle(paddleL) || collisionPaddle(paddleR)))
 		{
 			overlapped = true;
-			Gdx.app.log("overlapped"," true");
 			
 			// because it overlapped in the area between the two paddles
 			velocity.x = -velocity.x;
@@ -43,8 +43,7 @@ public class Ball extends Sprite
 			if (getX() + margin < paddleL.getX() + paddleL.getWidth() ||
 				getX() - margin + width > paddleR.getX())
 			{
-				velocity.y = - velocity.y;
-				Gdx.app.log("collision"," happened");	
+				velocity.y = - velocity.y;	
 			}
 		}
 		else
@@ -52,7 +51,6 @@ public class Ball extends Sprite
 			if (!collisionPaddle(paddleL) && !collisionPaddle(paddleR))
 			{
 				overlapped = false;
-				Gdx.app.log("overlapped"," false");
 			}
 		}
 		
@@ -65,7 +63,13 @@ public class Ball extends Sprite
 		setPosition(getX() + velocity.x*delta, getY() + velocity.y*delta);
 	}
 		
-	private boolean collisionPaddle(Paddle paddle) {
+	public Vector2 getVelocity() 
+	{
+		return velocity;
+	}
+
+	private boolean collisionPaddle(Paddle paddle) 
+	{
 		boolean collision = false;
 		
 		Rectangle paddleCollision = paddle.getBoundingRectangle();
