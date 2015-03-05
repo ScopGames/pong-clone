@@ -13,7 +13,7 @@ public class Paddle extends Sprite
 {
 	private int width = 20;
 	private int height = 100;
-	private float movement = 500;
+	private float movement = 250;
 	boolean inputEnabled = false;
 	
 	

@@ -15,7 +15,7 @@ public class PongGame implements ApplicationListener
 {
 	SpriteBatch batch;
 	Paddle paddleLeft, paddleRight;
-	Ball ball;
+	Ball ball,b,b2;
 
 	@Override
 	public void create() 
@@ -35,10 +35,24 @@ public class PongGame implements ApplicationListener
 		
 		updateGameEntities();
 		drawGameEntities();
-			
+		
+		if (ballLost())
+			initializeBall();
+				
 		batch.end();
 	}
 	
+	private boolean ballLost() {
+		boolean lost = false;
+		
+		float x = ball.getX();
+		
+		if (x + ball.getWidth() < 0 || x > Gdx.graphics.getWidth()) 
+			lost = true;
+		
+		return lost;
+	}
+
 	private void updateGameEntities() {
 		float delta = Gdx.graphics.getDeltaTime();
 		
@@ -51,7 +65,7 @@ public class PongGame implements ApplicationListener
 	private void drawGameEntities() {
 		paddleLeft.draw(batch);
 		paddleRight.draw(batch);
-		ball.draw(batch);
+		ball.draw(batch);		
 	}
 	
 	@Override
@@ -72,8 +86,10 @@ public class PongGame implements ApplicationListener
 	
 	private void initializeBall()
 	{
+		float speed = 250;
+		
 		Vector2 position = new Vector2(MathUtils.random(200), MathUtils.random(250));
-		Vector2 velocity = new Vector2(100, 100*MathUtils.randomSign());
+		Vector2 velocity = new Vector2(speed, speed*MathUtils.randomSign());
 		
 		ball = new Ball(position, velocity);
 	}

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Ball extends Sprite
@@ -12,13 +13,14 @@ public class Ball extends Sprite
 	private int width = 50;
 	private int height = 50;
 	private Vector2 velocity;
+	private boolean overlapped = false;
 	//private rotationSpeed = 0;
 	
 	public Ball(Vector2 position, Vector2 velocity)
-	{	
+	{			
 		Pixmap pixmap = new Pixmap(width, height, Format.RGBA8888);
 		pixmap.setColor(1,0,0,1);
-		pixmap.fillCircle(25, 25, 24);
+		pixmap.fillCircle(width/2, height/2, width/2 - 1);
 		this.set(new Sprite(new Texture(pixmap)));
 		
 		setPosition(position.x, position.y);
@@ -26,27 +28,53 @@ public class Ball extends Sprite
 	}
 	
 	public void update(float delta, Paddle paddleL, Paddle paddleR)
-	{
+	{	
+		float margin = 10;
+		
+		if (!overlapped && (collisionPaddle(paddleL) || collisionPaddle(paddleR)))
+		{
+			overlapped = true;
+			Gdx.app.log("overlapped"," true");
+			
+			// because it overlapped in the area between the two paddles
+			velocity.x = -velocity.x;
+			
+			// if overlapped behind the paddle
+			if (getX() + margin < paddleL.getX() + paddleL.getWidth() ||
+				getX() - margin + width > paddleR.getX())
+			{
+				velocity.y = - velocity.y;
+				Gdx.app.log("collision"," happened");	
+			}
+		}
+		else
+		{
+			if (!collisionPaddle(paddleL) && !collisionPaddle(paddleR))
+			{
+				overlapped = false;
+				Gdx.app.log("overlapped"," false");
+			}
+		}
+		
 		if (collisionTop() || collisionBottom())
 		{
 			// invert the direction on the y axis
 			velocity.y = -velocity.y;
 		}
-		
-		if (collisionPaddle(paddleL) || collisionPaddle(paddleR))
-		{
-			velocity.x = -velocity.x;
-		}
-			
+				
 		setPosition(getX() + velocity.x*delta, getY() + velocity.y*delta);
 	}
-	
+		
 	private boolean collisionPaddle(Paddle paddle) {
 		boolean collision = false;
 		
-		return paddle.getBoundingRectangle().overlaps(this.getBoundingRectangle());
+		Rectangle paddleCollision = paddle.getBoundingRectangle();
+		
+		collision = paddleCollision.overlaps(this.getBoundingRectangle());
+		
+		return collision;
 	}
-
+	
 	private boolean collisionBottom()
 	{
 		boolean collision = false;
