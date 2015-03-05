@@ -1,5 +1,7 @@
 package pongtest.ui;
 
+import pongtest.ui.Score.players;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -39,5 +41,24 @@ public class Score
 		String scoreStr = score1 + " : " + score2;
 		
 		font.draw(batch, scoreStr, Gdx.graphics.getWidth()/2 - 20, Gdx.graphics.getHeight()-10);
+	}
+
+	public int getScore(players player) {
+		int score = 0;
+		
+		switch (player) {
+		case PLAYER1:
+			score = score1;
+			break;
+		
+		case PLAYER2:
+			score = score2;
+			break;
+		
+		default:
+			break;
+		}
+		
+		return score;
 	}
 }

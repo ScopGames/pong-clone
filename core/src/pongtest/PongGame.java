@@ -19,6 +19,8 @@ public class PongGame implements ApplicationListener
 	private Paddle paddleLeft, paddleRight;
 	private Ball ball;
 	private Score score;
+	
+	private final static int winningScore = 2;
 
 	@Override
 	public void create() 
@@ -38,9 +40,20 @@ public class PongGame implements ApplicationListener
 		
 		batch.begin();
 		
-		updateGameEntities();
+		if (score.getScore(players.PLAYER1) == winningScore)
+		{
+			Gdx.app.log("player1", "wins");
+		}
+		else if (score.getScore(players.PLAYER1) == winningScore)
+		{
+			Gdx.app.log("player2", "wins");
+		}
+		else
+		{
+			updateGameEntities();
+		}
+		
 		drawGameEntities();
-				
 		score.render(batch);
 						
 		batch.end();
