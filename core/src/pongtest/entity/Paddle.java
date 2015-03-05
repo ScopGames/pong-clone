@@ -1,7 +1,5 @@
 package pongtest.entity;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -14,8 +12,6 @@ public class Paddle extends Sprite
 	private int width = 20;
 	private int height = 100;
 	private float movement = 250;
-	boolean inputEnabled = false;
-	
 	
 	/**
 	 * 
@@ -31,16 +27,6 @@ public class Paddle extends Sprite
 		set(new Sprite(new Texture(pixmap)));
 		setPosition(position.x, position.y);
 	}
-	
-	public void enableInput() 
-	{
-		this.inputEnabled = true;
-	}
-	
-//	public void update(float delta)
-//	{
-//		
-//	}
 	
 	public void moveUp(float delta) 
 	{

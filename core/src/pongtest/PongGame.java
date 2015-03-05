@@ -136,10 +136,8 @@ public class PongGame implements ApplicationListener
 	{
 		// Left paddle
 		paddleLeft = new Paddle(new Color(1,0,0,1), new Vector2(0,200));
-		paddleLeft.enableInput();
 		
 		// Right paddle
 		paddleRight = new Paddle(new Color(0,1,0,1), new Vector2(Gdx.app.getGraphics().getWidth()-20,200));
-		paddleRight.enableInput();
 	}
 }
