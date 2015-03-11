@@ -1,21 +1,32 @@
 package pongtest;
 
-import com.badlogic.gdx.ApplicationAdapter;
+import pongtest.ui.MainMenu;
 
-public class Main extends ApplicationAdapter 
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+
+public class Main extends Game
 {
-	PongGame mainGame;
+	public enum Screens {PONGGAME, MAINSCREEN};
 	
 	@Override
-	public void create () 
-	{
-		mainGame = new PongGame();
-		mainGame.create();
+	public void create() 
+	{	
+		//mainMenu = new MainMenu();
+		changeScreen(Screens.MAINSCREEN);
 	}
-
-	@Override
-	public void render () 
+	
+	public static void changeScreen(Screens newScreen)
 	{
-		mainGame.render();
+		switch(newScreen){
+		case MAINSCREEN:
+			((Game)Gdx.app.getApplicationListener()).setScreen(new MainMenu());
+			break;
+		case PONGGAME:
+			((Game)Gdx.app.getApplicationListener()).setScreen(new PongGame());
+			break;
+		default:
+			break;
+		}		
 	}
 }

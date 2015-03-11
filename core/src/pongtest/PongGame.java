@@ -6,15 +6,15 @@ import pongtest.input.PlayerInput;
 import pongtest.ui.Score;
 import pongtest.ui.Score.players;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
-public class PongGame implements ApplicationListener
+public class PongGame implements Screen
 {
 	private SpriteBatch batch;
 	private Paddle paddleLeft, paddleRight;
@@ -25,7 +25,7 @@ public class PongGame implements ApplicationListener
 	private final static int winningScore = 2;
 
 	@Override
-	public void create() 
+	public void show() 
 	{
 		batch = new SpriteBatch();
 		
@@ -38,7 +38,7 @@ public class PongGame implements ApplicationListener
 	}
 
 	@Override
-	public void render() 
+	public void render(float delta) 
 	{
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
@@ -54,7 +54,7 @@ public class PongGame implements ApplicationListener
 		}
 		else
 		{
-			updateGameEntities();
+			updateGameEntities(delta);
 		}
 		
 		drawGameEntities();
@@ -83,10 +83,8 @@ public class PongGame implements ApplicationListener
 		return lost;
 	}
 
-	private void updateGameEntities() 
-	{
-		float delta = Gdx.graphics.getDeltaTime();
-		
+	private void updateGameEntities(float delta) 
+	{	
 		input1.handleInput(delta);
 		input2.handleInput(delta);
 		
@@ -123,7 +121,7 @@ public class PongGame implements ApplicationListener
 	
 	private void initializeBall()
 	{
-		float speed = 500;
+		float speed = 200;
 		
 		float paddleWidth = paddleLeft.getWidth();
 		Vector2 position = new Vector2(paddleWidth + MathUtils.random(200), MathUtils.random(Gdx.graphics.getHeight()-50));
@@ -139,5 +137,11 @@ public class PongGame implements ApplicationListener
 		
 		// Right paddle
 		paddleRight = new Paddle(new Color(0,1,0,1), new Vector2(Gdx.app.getGraphics().getWidth()-20,200));
+	}
+
+	@Override
+	public void hide() {
+		// TODO Auto-generated method stub
+		
 	}
 }
