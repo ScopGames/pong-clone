@@ -119,7 +119,7 @@ public class PongGame implements Screen
 	public void dispose() {
 	}
 	
-	private void initializeBall()
+	private void initializeBall() 
 	{
 		float speed = 200;
 		
@@ -140,8 +140,6 @@ public class PongGame implements Screen
 	}
 
 	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-		
+	public void hide() {		
 	}
 }
