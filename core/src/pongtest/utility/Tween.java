@@ -1,5 +1,6 @@
 package pongtest.utility;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Interpolation;
 
 /** Interpolates values using differents easing equations.
@@ -9,10 +10,9 @@ public class Tween {
 	float initialValue;
 	float finalValue;
 	float duration;
-	float percentage = 0;
 	float elapsed = 0;
 	float value = 0;
-	private boolean isTweenActive = true;
+	private boolean finished = false;
 	Interpolation interpolation;
 
 	/** Creates a new tween.
@@ -32,15 +32,17 @@ public class Tween {
 	 * 
 	 * @param delta Frame time. */
 	public void update (float delta) {
-		if (isTweenActive && percentage <= 1) {
-			elapsed += delta;
-			percentage = elapsed / duration;
-
-			// don't let the percentage go over 1
-			if (percentage > 1) percentage = 1;
-
-			value = initialValue + (finalValue - initialValue) * interpolation.apply(percentage);
+		elapsed += delta;
+		float percentage = elapsed / duration;
+		
+		if (percentage > 1)
+		{
+			finished = true;
+			percentage = 1;
 		}
+			
+		
+		value = interpolation.apply(initialValue , finalValue, percentage);
 	}
 
 	/** Gets the current tween value.
@@ -50,35 +52,14 @@ public class Tween {
 		return value;
 	}
 
-	/** Pauses the tween.
-	 * 
-	 * After pausing it, it can be resumed with the resume() method. */
-	public void pause () {
-		isTweenActive = false;
-	}
-
-	/** Resumes a paused or stopped tween. */
-	public void resume () {
-		isTweenActive = true;
-	}
-
-	/** Stops the tween reverting the interpolation to the initial state. */
-	public void stop () {
-		isTweenActive = false;
+	/** Resets the tween reverting the interpolation to the initial state. */
+	public void reset() {		
 		elapsed = 0;
+		finished = false;
 		value = initialValue;
 	}
 
-	/** Restars the tween. */
-	public void restart () {
-		stop();
-		resume();
-	}
-
-	/** Tells if the tween is active.
-	 * 
-	 * @return true if the tween is active, false otherwise. */
-	public boolean isTweenActive () {
-		return isTweenActive;
+	public boolean finished() {
+		return finished;
 	}
 }
