@@ -136,23 +136,23 @@ public class MainMenu implements Screen, InputProcessor {
 	}
 	
 	private void initializeActions() {
-		
-		final Tween menuTweenShow = new Tween(Interpolation.exp5Out, 0, -200, 1.0f);
-		final Tween menuTweenHide = new Tween(Interpolation.exp5Out, -200, 0, 1.0f);
+		final Tween menuTweenShow = new Tween(Interpolation.exp5Out, 0, -150, 1.0f);
+		final Tween menuTweenHide = new Tween(Interpolation.exp5Out, -150, 0, 1.0f);
 		
 		showMultiplayerMenu = new Action() {
 			@Override
 			public boolean act(float delta) {
 				boolean done = false;
+				menuTweenShow.update(delta);
 				
-				if (table.getX() >= -150)
+				if (!menuTweenShow.finished())
 				{
-					menuTweenShow.update(delta);
 					table.setX(menuTweenShow.getValue());
 				}
 				else
 				{
 					ipInput.setVisible(true);
+					menuTweenShow.reset();
 					done = true;
 				}
 												
@@ -164,17 +164,17 @@ public class MainMenu implements Screen, InputProcessor {
 			@Override
 			public boolean act(float delta) {
 				boolean done = false;
+					
+				menuTweenHide.update(delta);
 				
-				Gdx.app.log("initial pos", table.getX()+"");
-				
-				if (table.getX() <= 0)
+				if (!menuTweenHide.finished())
 				{
-					menuTweenHide.update(delta);
 					table.setX(menuTweenHide.getValue());
 				}
 				else
 				{
 					ipInput.setVisible(false);
+					menuTweenHide.reset();
 					done = true;	
 				}
 												
