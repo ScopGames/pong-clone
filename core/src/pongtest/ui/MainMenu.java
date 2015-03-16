@@ -16,6 +16,8 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -23,15 +25,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class MainMenu implements Screen, InputProcessor {
 	
 	private Stage stage = new Stage();
 	private TextureAtlas atlas;
-	private Table table;
+	private Table mainTable, multiplayerTable;
 	private TextButton singlePlayerButton, multiplayerButton;
 	private TextField ipInput;
+	private Label ipLabel;
 	private Skin skin;
 	private BitmapFont mainFont;
 	private Action showMultiplayerMenu, hideMultiplayerMenu;
@@ -40,11 +44,12 @@ public class MainMenu implements Screen, InputProcessor {
 	public void show() {
 		Gdx.input.setInputProcessor(stage);
 		
+		// initialize table field
 		initializeActions();
 		createUI();
 		
-		stage.addActor(ipInput);
-		stage.addActor(table);
+		stage.addActor(mainTable);
+		stage.addActor(multiplayerTable);
 	}
 
 	@Override
@@ -61,15 +66,13 @@ public class MainMenu implements Screen, InputProcessor {
 		atlas = new TextureAtlas(Gdx.files.internal("ui/img/buttons.pack"));
 		skin = new Skin(atlas);
 		mainFont = new BitmapFont(Gdx.files.internal("ui/font/kongfont.fnt"));
-		mainFont.setScale(0.4f); // maybe we should reduce 
+		mainFont.setScale(0.38f); // maybe we should reduce 
 								 // the export font size ?
 		
 		TextButtonStyle textButtonStyle = new TextButtonStyle();
 		textButtonStyle.up = skin.getDrawable("button");
 		textButtonStyle.down = skin.getDrawable("button_afa");
 		textButtonStyle.font = mainFont;
-		//textButtonStyle.pressedOffsetX = 1;
-		//textButtonStyle.pressedOffsetY = -1;
 		
 		singlePlayerButton = new TextButton("Single Player", textButtonStyle);		
 		singlePlayerButton.addListener(new ClickListener() {
@@ -102,17 +105,15 @@ public class MainMenu implements Screen, InputProcessor {
 			}
 		});
 		
-		ipInput.setPosition(300, 200);
-		ipInput.setVisible(false);
-		
+		LabelStyle labelStyle = new LabelStyle(mainFont, Color.WHITE);
+		ipLabel = new Label("IP del server:", labelStyle);
+				
 		multiplayerButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				// TODO Auto-generated method stub
 				super.clicked(event, x, y);
-				Gdx.app.log("button", "is visible: " + ipInput.isVisible());
 				
-				if(!ipInput.isVisible()) {
+				if(!multiplayerTable.isVisible()) {
 					stage.addAction(showMultiplayerMenu);
 				}
 				else {
@@ -121,22 +122,33 @@ public class MainMenu implements Screen, InputProcessor {
 			}
 		});
 				
-		table = new Table();
-		table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		mainTable = new Table();
+		multiplayerTable = new Table();
 		
-		table.add(singlePlayerButton);
-		table.row();
-		table.add(multiplayerButton);
+		mainTable.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		multiplayerTable.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		
+		mainTable.add(singlePlayerButton);
+		mainTable.row();
+		mainTable.add(multiplayerButton);
 		
 		// this is needed to set the size of buttons that are inside a table
-		for (Cell cell : table.getCells())
+		for (Cell cell : mainTable.getCells())
 		{
 			cell.minWidth(180);
 		}
+	
+		multiplayerTable.align(Align.left);
+		multiplayerTable.add(ipLabel);
+		multiplayerTable.row();
+		multiplayerTable.add(ipInput);
+		multiplayerTable.moveBy(mainTable.getWidth()/2, 0);
+		//multiplayerTable.debug();
+		multiplayerTable.setVisible(false);
 	}
 	
 	private void initializeActions() {
-		final Tween menuTweenShow = new Tween(Interpolation.exp5Out, 0, -150, 1.0f);
+		final Tween menuTweenShow = new Tween(Interpolation.exp5Out, 0, -150, 1.0f);		
 		final Tween menuTweenHide = new Tween(Interpolation.exp5Out, -150, 0, 1.0f);
 		
 		showMultiplayerMenu = new Action() {
@@ -145,13 +157,15 @@ public class MainMenu implements Screen, InputProcessor {
 				boolean done = false;
 				menuTweenShow.update(delta);
 				
+				multiplayerTable.setVisible(true);
+				
 				if (!menuTweenShow.finished())
 				{
-					table.setX(menuTweenShow.getValue());
+					mainTable.setX(menuTweenShow.getValue());
+					multiplayerTable.setColor(1, 1, 1, menuTweenShow.getPercentage());
 				}
 				else
-				{
-					ipInput.setVisible(true);
+				{					
 					menuTweenShow.reset();
 					done = true;
 				}
@@ -169,11 +183,12 @@ public class MainMenu implements Screen, InputProcessor {
 				
 				if (!menuTweenHide.finished())
 				{
-					table.setX(menuTweenHide.getValue());
+					mainTable.setX(menuTweenHide.getValue());
+					multiplayerTable.setColor(0, 0, 0, 1 - menuTweenHide.getPercentage());
 				}
 				else
 				{
-					ipInput.setVisible(false);
+					multiplayerTable.setVisible(false);
 					menuTweenHide.reset();
 					done = true;	
 				}
