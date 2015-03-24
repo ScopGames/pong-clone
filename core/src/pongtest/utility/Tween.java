@@ -1,25 +1,29 @@
 package pongtest.utility;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 
 /** Interpolates values using differents easing equations.
  * 
  * Helper class for gdx.utils.Interpolation. */
-public class Tween {
+public class Tween {	
 	float initialValue;
 	float finalValue;
 	float duration;
 	float elapsed = 0;
 	float value = 0;
+	int repeatsCount = 0;
+	int desiredRepetitions = 0;
 	private boolean finished = false;
 	Interpolation interpolation;
 	RepeatMode repeatMode = RepeatMode.NORMAL;
 
+	// TODO do we need all these repeat modes ? LOOP and REPEAT can be merged.
+	// Remember to update the javadoc, if some of these is removed
 	public enum RepeatMode {
 		NORMAL, LOOP, LOOP_PINGPONG, REPEAT, REPEAT_PINGPONG
 	};
+
 	
 	/** Creates a new tween.
 	 * 
@@ -58,7 +62,7 @@ public class Tween {
 	private boolean updateMode(float percentage)
 	{
 		boolean modeFinished = false;
-		
+				
 		switch (repeatMode) {
 			case NORMAL:
 				if (percentage  >= 1)
@@ -66,25 +70,52 @@ public class Tween {
 				break;
 			
 			case LOOP: // infinite loop
-				if (percentage >= 1) {	
-					reset();
+				if (percentage >= 1) {					
+					elapsed = 0;
+					value = initialValue;
 				}
 				break;
 			
 			case LOOP_PINGPONG: // infinite pingpong loop
-				if (percentage >= 1) {			
-					
-					Gdx.app.log("stat", "initial: " + initialValue + "\nfinalvalue: " 
-							+ finalValue + "actual:" + value);
+				if (percentage >= 1) {								
 					// swapping initial and final values
 					float tmp = initialValue;
 					initialValue = finalValue;
 					finalValue = tmp;
 					
-					reset();
+					value = initialValue;
+					elapsed = 0;
 					percentage = 0;
-					Gdx.app.log("stat", "initial: " + initialValue + "\nfinalvalue: " 
-					+ finalValue + "actual:" + value);
+				}				
+				break;
+			
+			case REPEAT: // infinite loop
+				if (percentage >= 1) {					
+					elapsed = 0;
+					value = initialValue;
+					
+					repeatsCount += 1;
+					
+					if (repeatsCount == desiredRepetitions)
+						modeFinished = true;
+				}
+				break;
+			
+			case REPEAT_PINGPONG: // infinite pingpong loop
+				if (percentage >= 1) {								
+					// swapping initial and final values
+					float tmp = initialValue;
+					initialValue = finalValue;
+					finalValue = tmp;
+					
+					value = initialValue;
+					elapsed = 0;
+					percentage = 0;
+					
+					repeatsCount += 1; 
+					
+					if (repeatsCount == desiredRepetitions)
+						modeFinished = true;
 				}				
 				break;
 			
@@ -93,6 +124,7 @@ public class Tween {
 		}
 		
 		value = interpolation.apply(initialValue , finalValue, percentage);
+		
 		return modeFinished;
 	}
 	
@@ -106,6 +138,7 @@ public class Tween {
 	/** Resets the tween reverting the interpolation to the initial state. */
 	public void reset() {		
 		elapsed = 0;
+		repeatsCount = 0;
 		finished = false;
 		value = initialValue;
 	}
@@ -125,5 +158,15 @@ public class Tween {
 	
 	public void setRepeatMode(RepeatMode repeatMode) {
 		this.repeatMode = repeatMode;
+	}
+	
+	/**
+	 * Sets the desired repetitions count for the tween.
+	 * 
+	 * Note that doesn't affect LOOP tweens.
+	 * @param repetitions
+	 */
+	public void setRepetitions(int repetitions) {
+		this.desiredRepetitions = repetitions;
 	}
 }
