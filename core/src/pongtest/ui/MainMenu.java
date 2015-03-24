@@ -100,6 +100,10 @@ public class MainMenu implements Screen, InputProcessor {
 				if (! Character.isAlphabetic(c)) {
 					accepted = true;
 				}
+				
+				// ip address are 12 digits + 4 points
+				if (ipInput.getText().length() > 16)
+					accepted = false;
 							
 				return accepted;
 			}
