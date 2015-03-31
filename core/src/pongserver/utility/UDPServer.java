@@ -1,4 +1,4 @@
-package pongtest.network;
+package pongserver.utility;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,7 +9,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
-class UDPServer
+public class UDPServer
 {
     private DatagramSocket serverSocket;
     private byte[] buffer;

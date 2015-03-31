@@ -1,4 +1,4 @@
-package pongtest.network;
+package pongserver.utility;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -6,7 +6,7 @@ import java.net.InetAddress;
 
 
 public class UPDClient {
-	public enum Task {REGISTER_PLAYER, UPDATE_PADDLE}
+	public static enum Task {REGISTER_PLAYER, UPDATE_PADDLE}
 	
 	public static void main(String args[]) throws Exception {
 		DatagramSocket clientSocket;
