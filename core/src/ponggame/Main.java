@@ -1,6 +1,6 @@
-package pongtest;
+package ponggame;
 
-import pongtest.ui.MainMenu;
+import ponggame.ui.MainMenu;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;

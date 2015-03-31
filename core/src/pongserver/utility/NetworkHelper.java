@@ -7,46 +7,44 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.SocketException;
+import java.net.InetAddress;
 
-public class UDPServer
-{
-    private DatagramSocket serverSocket;
-    private byte[] buffer;
-                    
-    public UDPServer() throws SocketException
+public class NetworkHelper 
+{	
+	public static enum Task {REGISTER_PLAYER, UPDATE_PADDLE, START_GAME}	
+       
+	public static DatagramPacket receive(DatagramSocket socket) throws IOException
     {
-    	serverSocket = new DatagramSocket(9876);
-    	buffer = new byte[1024]; // default buffer size is 1024
-    }
-   
-    /**
-     * 
-     * @param port
-     * @param bufferSize in bytes
-     * @throws SocketException
-     */
-    public UDPServer(int port, int bufferSize) throws SocketException
-    {
-    	serverSocket = new DatagramSocket(port);
-    	buffer = new byte[bufferSize];
-    }
-    
-    public DatagramPacket receive() throws IOException
-    {
+    	byte[] buffer = new byte[1024];
     	DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
     	
-    	System.out.println("Listening...");
-    	serverSocket.receive(receivePacket); // blocking function
-    	System.out.println("Packet received: " + receivePacket.getLength());
-    	
+    	socket.receive(receivePacket); // blocking function
+       	
     	return receivePacket;
+    }
+    
+    public static void send(DatagramSocket socket, EClient client, Task task) throws Exception 
+    {		
+		byte[] buffer = serialize(task); 
+		
+		if (buffer.length < 1024)
+		{
+			DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, client.ipaddress, client.port);
+			socket.send(sendPacket);
+			//socket.close();
+			// maybe close the socket ? 
+		}
+		else
+		{
+			throw new Exception("Can't send data greater than 1024 bytes");
+		}
     }
     
 	public static byte[] serialize(Object obj) throws IOException 
 	{
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
 	    ObjectOutputStream os = new ObjectOutputStream(out);
+	    out.flush();
 	    os.writeObject(obj);
 	    return out.toByteArray();
 	}

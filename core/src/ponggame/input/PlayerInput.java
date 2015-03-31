@@ -1,9 +1,9 @@
-package pongtest.input;
+package ponggame.input;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 
-import pongtest.entity.Paddle;
+import ponggame.entity.Paddle;
 
 public class PlayerInput 
 {

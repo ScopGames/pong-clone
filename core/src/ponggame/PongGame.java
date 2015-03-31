@@ -1,10 +1,10 @@
-package pongtest;
+package ponggame;
 
-import pongtest.entity.Ball;
-import pongtest.entity.Paddle;
-import pongtest.input.PlayerInput;
-import pongtest.ui.Score;
-import pongtest.ui.Score.players;
+import ponggame.entity.Ball;
+import ponggame.entity.Paddle;
+import ponggame.input.PlayerInput;
+import ponggame.ui.Score;
+import ponggame.ui.Score.players;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
