@@ -5,8 +5,8 @@ import java.net.InetAddress;
 
 public class EClient {
 	
-	private InetAddress ipaddress;
-	private int port ;
+	public InetAddress ipaddress;
+	public int port ;
 	
 	public EClient(InetAddress a, int p)
 	{
