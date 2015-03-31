@@ -1,4 +1,4 @@
-package pongtest.utility;
+package ponggame.utility;
 
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;

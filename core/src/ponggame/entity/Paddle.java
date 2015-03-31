@@ -1,4 +1,4 @@
-package pongtest.entity;
+package ponggame.entity;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;

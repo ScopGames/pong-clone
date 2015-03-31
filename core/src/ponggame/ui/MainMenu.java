@@ -1,9 +1,9 @@
-package pongtest.ui;
+package ponggame.ui;
 
-import pongtest.Main;
-import pongtest.Main.Screens;
-import pongtest.utility.Tween;
-import pongtest.utility.Tween.RepeatMode;
+import ponggame.Main;
+import ponggame.Main.Screens;
+import ponggame.utility.Tween;
+import ponggame.utility.Tween.RepeatMode;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
