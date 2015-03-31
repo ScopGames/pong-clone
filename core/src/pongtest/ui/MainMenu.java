@@ -3,6 +3,7 @@ package pongtest.ui;
 import pongtest.Main;
 import pongtest.Main.Screens;
 import pongtest.utility.Tween;
+import pongtest.utility.Tween.RepeatMode;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -29,7 +30,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class MainMenu implements Screen, InputProcessor {
-	
 	private Stage stage = new Stage();
 	private TextureAtlas atlas;
 	private Table mainTable, multiplayerTable;
@@ -90,6 +90,7 @@ public class MainMenu implements Screen, InputProcessor {
 		style.font = mainFont;
 		style.fontColor = new Color(1, 1, 0, 1);
 		style.background = skin.getDrawable("button");
+		//style.cursor.setMinWidth(2f);
 		
 		ipInput = new TextField("",style);
 		ipInput.setTextFieldFilter(new TextFieldFilter() {
@@ -101,8 +102,8 @@ public class MainMenu implements Screen, InputProcessor {
 					accepted = true;
 				}
 				
-				// ip address are 12 digits + 4 points
-				if (ipInput.getText().length() > 16)
+				// ip address are 12 digits + 3 points
+				if (ipInput.getText().length() >= 15)
 					accepted = false;
 							
 				return accepted;
@@ -152,7 +153,8 @@ public class MainMenu implements Screen, InputProcessor {
 	}
 	
 	private void initializeActions() {
-		final Tween menuTweenShow = new Tween(Interpolation.exp5Out, 0, -150, 1.0f);		
+		final Tween menuTweenShow = new Tween(Interpolation.exp5Out, 0, -150, 1.0f);
+		//menuTweenShow.setRepeatMode(RepeatMode.REPEAT_PINGPONG);
 		final Tween menuTweenHide = new Tween(Interpolation.exp5Out, -150, 0, 1.0f);
 		
 		showMultiplayerMenu = new Action() {

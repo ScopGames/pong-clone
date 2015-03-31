@@ -22,7 +22,7 @@ public class PongGame implements Screen
 	private Score score;
 	private PlayerInput input1, input2;
 	
-	private final static int winningScore = 2;
+	private final static int winningScore = 10;
 
 	@Override
 	public void show() 
@@ -121,7 +121,7 @@ public class PongGame implements Screen
 	
 	private void initializeBall() 
 	{
-		float speed = 200;
+		float speed = 300;
 		
 		float paddleWidth = paddleLeft.getWidth();
 		Vector2 position = new Vector2(paddleWidth + MathUtils.random(200), MathUtils.random(Gdx.graphics.getHeight()-50));

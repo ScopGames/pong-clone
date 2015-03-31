@@ -1,41 +1,31 @@
 package pongtest.network;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 
 public class UPDClient {
+	public enum Task {REGISTER_PLAYER, UPDATE_PADDLE}
 	
 	public static void main(String args[]) throws Exception {
-	
-		BufferedReader inFromUser;
 		DatagramSocket clientSocket;
-		InetAddress IPAddress;
+		InetAddress IPAddress;	
 		byte[] sendData = new byte[1024];
-		byte[] receiveData = new byte[1024];
 		DatagramPacket sendPacket;
-		DatagramPacket receivePacket;
 		
 		clientSocket = new DatagramSocket();
-		IPAddress = InetAddress.getByName("192.168.0.3");
+		IPAddress = InetAddress.getByName("127.0.0.1");
 		
-		inFromUser = new BufferedReader(new InputStreamReader(System.in));
-		String sentence = inFromUser.readLine();
+		sendData = UDPServer.serialize(Task.REGISTER_PLAYER); 
 		
-		sendData = sentence.getBytes();
-		sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9876);
-	
-		clientSocket.send(sendPacket);
-		receivePacket = new DatagramPacket(receiveData, receiveData.length);
-		clientSocket.receive(receivePacket);
-		
-		String modifiedSentence = new String(receivePacket.getData());
-	    System.out.println("FROM SERVER:" + modifiedSentence);
-		
+		if (sendData.length <= 1024)
+		{
+			sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9876);
+			clientSocket.send(sendPacket);
+			System.out.println("packet sent\nSize: " + sendPacket.getLength());
+		}
+					
 	    clientSocket.close();
 	}
-
 }
