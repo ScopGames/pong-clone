@@ -1,7 +1,5 @@
 package pongtest.entity;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -13,9 +11,7 @@ public class Paddle extends Sprite
 {
 	private int width = 20;
 	private int height = 100;
-	private float movement = 500;
-	boolean inputEnabled = false;
-	
+	private float movement = 250;
 	
 	/**
 	 * 
@@ -32,30 +28,13 @@ public class Paddle extends Sprite
 		setPosition(position.x, position.y);
 	}
 	
-	public void enableInput() 
+	public void moveUp(float delta) 
 	{
-		this.inputEnabled = true;
+		setPosition(getX(), getY() + delta*movement);		
 	}
-	
-	public void update(float delta)
+
+	public void moveDown(float delta) 
 	{
-		if (inputEnabled)
-			handleInput(delta);
-	}
-	
-	/**
-	 * 
-	 * @param delta
-	 */
-	private void handleInput(float delta) 
-	{				
-		if (Gdx.input.isKeyPressed(Keys.W) && getY()+height < Gdx.graphics.getHeight()) 
-		{
-			setPosition(getX(), getY()+delta*movement);
-		}
-		else if (Gdx.input.isKeyPressed(Keys.S) && getY() >= 0)
-		{
-			setPosition(getX(), getY()-delta*movement);
-		}
+		setPosition(getX(), getY() - delta*movement);
 	}
 }

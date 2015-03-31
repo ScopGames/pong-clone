@@ -2,56 +2,105 @@ package pongtest;
 
 import pongtest.entity.Ball;
 import pongtest.entity.Paddle;
+import pongtest.input.PlayerInput;
+import pongtest.ui.Score;
+import pongtest.ui.Score.players;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
-public class PongGame implements ApplicationListener
+public class PongGame implements Screen
 {
-	SpriteBatch batch;
-	Paddle paddleLeft, paddleRight;
-	Ball ball;
+	private SpriteBatch batch;
+	private Paddle paddleLeft, paddleRight;
+	private Ball ball;
+	private Score score;
+	private PlayerInput input1, input2;
+	
+	private final static int winningScore = 10;
 
 	@Override
-	public void create() 
+	public void show() 
 	{
 		batch = new SpriteBatch();
 		
+		score = new Score();
+		
+		initializePaddles();
+		input1 = new PlayerInput(paddleLeft, PlayerInput.layoutInput.WASD);
+		input2 = new PlayerInput(paddleRight, PlayerInput.layoutInput.ARROWS);
 		initializeBall();
-		initializePaddles();		
 	}
 
 	@Override
-	public void render() 
+	public void render(float delta) 
 	{
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		batch.begin();
 		
-		updateGameEntities();
+		if (score.getScore(players.PLAYER1) == winningScore)
+		{
+			Gdx.app.log("player1", "wins");
+		}
+		else if (score.getScore(players.PLAYER2) == winningScore)
+		{
+			Gdx.app.log("player2", "wins");
+		}
+		else
+		{
+			updateGameEntities(delta);
+		}
+		
 		drawGameEntities();
-			
+		score.render(batch);
+						
 		batch.end();
 	}
 	
-	private void updateGameEntities() {
-		float delta = Gdx.graphics.getDeltaTime();
+	private void updateUI()
+	{
+		if (ball.getVelocity().x < 0f)
+			score.addPoint(players.PLAYER2);
+		else
+			score.addPoint(players.PLAYER1);
+	}
+
+	private boolean ballLost() 
+	{
+		boolean lost = false;
 		
-		paddleLeft.update(delta);
-		paddleRight.update(delta);
+		float x = ball.getX();
+		
+		if (x + ball.getWidth() < 0 || x > Gdx.graphics.getWidth()) 
+			lost = true;
+		
+		return lost;
+	}
+
+	private void updateGameEntities(float delta) 
+	{	
+		input1.handleInput(delta);
+		input2.handleInput(delta);
 		
 		ball.update(delta, paddleLeft, paddleRight);
+		
+		if (ballLost())
+		{
+			updateUI();
+			initializeBall();
+		}
 	}
 	
 	private void drawGameEntities() {
 		paddleLeft.draw(batch);
 		paddleRight.draw(batch);
-		ball.draw(batch);
+		ball.draw(batch);		
 	}
 	
 	@Override
@@ -70,10 +119,13 @@ public class PongGame implements ApplicationListener
 	public void dispose() {
 	}
 	
-	private void initializeBall()
+	private void initializeBall() 
 	{
-		Vector2 position = new Vector2(MathUtils.random(200), MathUtils.random(250));
-		Vector2 velocity = new Vector2(100, 100*MathUtils.randomSign());
+		float speed = 300;
+		
+		float paddleWidth = paddleLeft.getWidth();
+		Vector2 position = new Vector2(paddleWidth + MathUtils.random(200), MathUtils.random(Gdx.graphics.getHeight()-50));
+		Vector2 velocity = new Vector2(speed, speed*MathUtils.randomSign());
 		
 		ball = new Ball(position, velocity);
 	}
@@ -82,10 +134,12 @@ public class PongGame implements ApplicationListener
 	{
 		// Left paddle
 		paddleLeft = new Paddle(new Color(1,0,0,1), new Vector2(0,200));
-		paddleLeft.enableInput();
 		
 		// Right paddle
 		paddleRight = new Paddle(new Color(0,1,0,1), new Vector2(Gdx.app.getGraphics().getWidth()-20,200));
-		paddleRight.enableInput();
+	}
+
+	@Override
+	public void hide() {		
 	}
 }
