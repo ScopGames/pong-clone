@@ -18,7 +18,9 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
@@ -36,6 +38,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 public class MainMenu implements Screen, InputProcessor {
 	private Stage stage = new Stage();
@@ -73,6 +76,7 @@ public class MainMenu implements Screen, InputProcessor {
 	{
 		atlas = new TextureAtlas(Gdx.files.internal("ui/img/buttons.pack"));
 		skin = new Skin(atlas);
+		
 		mainFont = new BitmapFont(Gdx.files.internal("ui/font/kongfont.fnt"));
 		mainFont.setScale(0.38f); // maybe we should reduce 
 								  // the export font size ?
@@ -93,16 +97,16 @@ public class MainMenu implements Screen, InputProcessor {
 		
 		multiplayerButton = new TextButton("Multiplayer", textButtonStyle);
 		
-		TextFieldStyle style = new TextFieldStyle();
-		style.font = mainFont;
-		style.fontColor = new Color(1, 1, 0, 1);
-		style.background = skin.getDrawable("button");
-		//style.cursor.setMinWidth(2f);
+		TextFieldStyle textFieldStyle = new TextFieldStyle();
+		textFieldStyle.font = mainFont;
+		textFieldStyle.fontColor = new Color(1, 1, 0, 1);
+		textFieldStyle.background = skin.getDrawable("button");
+		textFieldStyle.cursor = new SpriteDrawable(new Sprite(new Texture(Gdx.files.internal("ui/cursor.png"))));
 		
 		LabelStyle labelStyle = new LabelStyle(mainFont, Color.WHITE);
 		ipLabel = new Label("IP del server:", labelStyle);
 
-		ipInput = new TextField("",style);
+		ipInput = new TextField("127.0.0.1", textFieldStyle);
 		ipInput.setTextFieldFilter(new TextFieldFilter() {
 			@Override
 			public boolean acceptChar(TextField textField, char c) {
