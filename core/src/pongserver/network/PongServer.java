@@ -6,21 +6,21 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
 
-import pongserver.utility.EClient;
 import pongserver.utility.NetworkHelper;
 import pongserver.utility.NetworkHelper.Task;
+import pongserver.utility.Player;
 
 
 public class PongServer 
 {
-	private ArrayList<EClient> clients;
+	private ArrayList<Player> clients;
 	public final static int SERVER_PORT = 9876;
 	
 	DatagramSocket socketReceive;
 	
 	public PongServer() throws SocketException
 	{
-		clients = new ArrayList<EClient>();
+		clients = new ArrayList<Player>();
 	}
 	
 	public void start()
@@ -71,7 +71,7 @@ public class PongServer
 		}
 	}
 	
-	public void doTask(Task task, DatagramPacket packet) throws ClassNotFoundException, IOException 
+	public void doTask(Task task, DatagramPacket packet)
 	{
 		switch (task)
 		{
@@ -88,18 +88,26 @@ public class PongServer
 	{
 		if(clients.size() < 2)
 		{
-			clients.add(new EClient(packet.getAddress(),packet.getPort()));
+			clients.add(new Player(packet.getAddress(),packet.getPort()));
 			
 			if (clients.size() == 2)
 			{
 				try 
 				{
-					DatagramSocket socket;
-					socket = new DatagramSocket();
+					DatagramSocket socket = new DatagramSocket();
 					System.out.println("PongServer - Starting game - Sending two packets");
-					NetworkHelper.send(socket, clients.get(0), Task.START_GAME);
-					NetworkHelper.send(socket, clients.get(1), Task.START_GAME);		
-						
+					
+					NetworkHelper.send(socket, 
+							clients.get(0).ipaddress,
+							clients.get(0).port,
+							Task.START_GAME);
+					
+					NetworkHelper.send(socket, 
+							clients.get(1).ipaddress,
+							clients.get(1).port,
+							Task.START_GAME);		
+					
+					//TODO close the socket ? 
 				} 
 				catch (SocketException e1) 
 				{

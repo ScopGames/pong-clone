@@ -1,9 +1,17 @@
 package ponggame.ui;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 import ponggame.Main;
 import ponggame.Main.Screens;
 import ponggame.utility.Tween;
-import ponggame.utility.Tween.RepeatMode;
+import pongserver.network.PongServer;
+import pongserver.utility.NetworkHelper;
+import pongserver.utility.NetworkHelper.Task;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -33,9 +41,9 @@ public class MainMenu implements Screen, InputProcessor {
 	private Stage stage = new Stage();
 	private TextureAtlas atlas;
 	private Table mainTable, multiplayerTable;
-	private TextButton singlePlayerButton, multiplayerButton;
+	private TextButton singlePlayerButton, multiplayerButton, submitIpButton;
 	private TextField ipInput;
-	private Label ipLabel;
+	private Label ipLabel, connectionStatusLabel;
 	private Skin skin;
 	private BitmapFont mainFont;
 	private Action showMultiplayerMenu, hideMultiplayerMenu;
@@ -67,7 +75,7 @@ public class MainMenu implements Screen, InputProcessor {
 		skin = new Skin(atlas);
 		mainFont = new BitmapFont(Gdx.files.internal("ui/font/kongfont.fnt"));
 		mainFont.setScale(0.38f); // maybe we should reduce 
-								 // the export font size ?
+								  // the export font size ?
 		
 		TextButtonStyle textButtonStyle = new TextButtonStyle();
 		textButtonStyle.up = skin.getDrawable("button");
@@ -78,7 +86,6 @@ public class MainMenu implements Screen, InputProcessor {
 		singlePlayerButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				// TODO Auto-generated method stub
 				super.clicked(event, x, y);
 				Main.changeScreen(Screens.PONGGAME);
 			}
@@ -92,6 +99,9 @@ public class MainMenu implements Screen, InputProcessor {
 		style.background = skin.getDrawable("button");
 		//style.cursor.setMinWidth(2f);
 		
+		LabelStyle labelStyle = new LabelStyle(mainFont, Color.WHITE);
+		ipLabel = new Label("IP del server:", labelStyle);
+
 		ipInput = new TextField("",style);
 		ipInput.setTextFieldFilter(new TextFieldFilter() {
 			@Override
@@ -110,9 +120,19 @@ public class MainMenu implements Screen, InputProcessor {
 			}
 		});
 		
-		LabelStyle labelStyle = new LabelStyle(mainFont, Color.WHITE);
-		ipLabel = new Label("IP del server:", labelStyle);
+		submitIpButton = new TextButton("Submit", textButtonStyle);		
+		submitIpButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				super.clicked(event, x, y);
+				String ipAddress = ipInput.getText();
 				
+				connectToServer(ipAddress);
+			}
+		});
+		
+		connectionStatusLabel = new Label("placeholder...", labelStyle);
+		
 		multiplayerButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -147,6 +167,10 @@ public class MainMenu implements Screen, InputProcessor {
 		multiplayerTable.add(ipLabel);
 		multiplayerTable.row();
 		multiplayerTable.add(ipInput);
+		multiplayerTable.row();
+		multiplayerTable.add(submitIpButton);
+		multiplayerTable.row();
+		multiplayerTable.add(connectionStatusLabel);
 		multiplayerTable.moveBy(mainTable.getWidth()/2, 0);
 		//multiplayerTable.debug();
 		multiplayerTable.setVisible(false);
@@ -204,28 +228,57 @@ public class MainMenu implements Screen, InputProcessor {
 		};
 	}
 	
+	private void connectToServer(String address_str)
+	{		
+		try 
+		{
+			// sending
+			InetAddress address = InetAddress.getByName(address_str);
+			DatagramSocket socket = new DatagramSocket();
+			NetworkHelper.send(socket, address, PongServer.SERVER_PORT, Task.REGISTER_PLAYER);
+			System.out.println("MainMenu : Packet sent");
+			connectionStatusLabel.setText("Packet sent");
+			
+			//TODO maybe do this in another thread ? 
+			// receiving
+			System.out.println("MainMenu: Listening...");
+			connectionStatusLabel.setText("Waiting for other players to connect");
+			DatagramPacket packet = NetworkHelper.receive(socket);
+			Task task = (Task)NetworkHelper.deserialize(packet.getData());
+			
+			System.out.println("Receveid packet. Task = " + task);
+			connectionStatusLabel.setText("Task = " + task);
+			
+			//Main.changeScreen(Screens.PONGGAME_MULTIPLAYER);
+		} 
+		catch (SocketException e)
+		{
+			e.printStackTrace();
+		}
+		catch (UnknownHostException e)
+		{
+			e.printStackTrace();
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
+	public void resize(int width, int height) {		
 	}
 
 	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-		
+	public void pause() {		
 	}
 
 	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
+	public void resume() {		
 	}
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -238,49 +291,41 @@ public class MainMenu implements Screen, InputProcessor {
 
 	@Override
 	public boolean keyDown(int keycode) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean keyUp(int keycode) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		
 		return false;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		
 		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
 		return false;
 	}	
 }

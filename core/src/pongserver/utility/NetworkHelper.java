@@ -23,13 +23,13 @@ public class NetworkHelper
     	return receivePacket;
     }
     
-    public static void send(DatagramSocket socket, EClient client, Task task) throws Exception 
+    public static void send(DatagramSocket socket, InetAddress address, int port, Task task) throws Exception 
     {		
 		byte[] buffer = serialize(task); 
 		
 		if (buffer.length < 1024)
 		{
-			DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, client.ipaddress, client.port);
+			DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, address, port);
 			socket.send(sendPacket);
 			//socket.close();
 			// maybe close the socket ? 
@@ -39,7 +39,7 @@ public class NetworkHelper
 			throw new Exception("Can't send data greater than 1024 bytes");
 		}
     }
-    
+         
 	public static byte[] serialize(Object obj) throws IOException 
 	{
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
