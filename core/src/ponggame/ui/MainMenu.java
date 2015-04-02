@@ -343,20 +343,22 @@ public class MainMenu implements Screen, InputProcessor {
 		
 		public DatagramSocket tsocket;
 		public Label tconnection;
-
-	   public ReceivingHandler(DatagramSocket socket, Label connection)
-	   {
-			   tsocket = socket;
-			   tconnection = connection;
-	   }
-
-	   public void run()
-	   {
+		
+		public ReceivingHandler(DatagramSocket socket, Label connection)
+		{
+			tsocket = socket;
+			tconnection = connection;
+		}
+		
+		public void run()
+		{
 		    System.out.println("NewThread: Listening...");
 			tconnection.setText("Waiting...");
 			DatagramPacket packet;
 			Task task;
-			try {
+			
+			try 
+			{
 				packet = NetworkHelper.receive(this.tsocket);
 				task = (Task)NetworkHelper.deserialize(packet.getData());
 				System.out.println("Receveid packet. Task = " + task);
@@ -364,14 +366,12 @@ public class MainMenu implements Screen, InputProcessor {
 			} 
 			catch (IOException e) 
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			catch (ClassNotFoundException e) 
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-	   }
+		}
 	}
 }
