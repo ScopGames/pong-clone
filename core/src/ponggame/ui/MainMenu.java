@@ -1,5 +1,6 @@
 package ponggame.ui;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -43,7 +44,8 @@ public class MainMenu implements Screen, InputProcessor {
 	private Table mainTable, multiplayerTable;
 	private TextButton singlePlayerButton, multiplayerButton, submitIpButton;
 	private TextField ipInput;
-	private Label ipLabel, connectionStatusLabel;
+	private Label ipLabel;
+	private static Label connectionStatusLabel;
 	private Skin skin;
 	private BitmapFont mainFont;
 	private Action showMultiplayerMenu, hideMultiplayerMenu;
@@ -239,16 +241,19 @@ public class MainMenu implements Screen, InputProcessor {
 			System.out.println("MainMenu : Packet sent");
 			connectionStatusLabel.setText("Packet sent");
 			
+			
+			Thread t = new Thread(new ReceivingHandler(socket, connectionStatusLabel));
+			t.start();
 			//TODO maybe do this in another thread ? 
 			// receiving
-			System.out.println("MainMenu: Listening...");
+			/*System.out.println("MainMenu: Listening...");
 			connectionStatusLabel.setText("Waiting for other players to connect");
 			DatagramPacket packet = NetworkHelper.receive(socket);
 			Task task = (Task)NetworkHelper.deserialize(packet.getData());
 			
 			System.out.println("Receveid packet. Task = " + task);
 			connectionStatusLabel.setText("Task = " + task);
-			
+			*/
 			//Main.changeScreen(Screens.PONGGAME_MULTIPLAYER);
 		} 
 		catch (SocketException e)
@@ -328,4 +333,41 @@ public class MainMenu implements Screen, InputProcessor {
 	public boolean scrolled(int amount) {
 		return false;
 	}	
+	
+	
+	public static class ReceivingHandler implements Runnable {
+		
+		public DatagramSocket tsocket;
+		public Label tconnection;
+
+	   public ReceivingHandler(DatagramSocket socket, Label connection)
+	   {
+			   tsocket = socket;
+			   tconnection = connection;
+	   }
+
+	   public void run()
+	   {
+		    System.out.println("NewThread: Listening...");
+			tconnection.setText("Waiting...");
+			DatagramPacket packet;
+			Task task;
+			try {
+				packet = NetworkHelper.receive(this.tsocket);
+				task = (Task)NetworkHelper.deserialize(packet.getData());
+				System.out.println("Receveid packet. Task = " + task);
+				tconnection.setText("Task = " + task);
+			} 
+			catch (IOException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (ClassNotFoundException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	   }
+	}
 }
