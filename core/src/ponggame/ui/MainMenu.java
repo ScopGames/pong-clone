@@ -244,7 +244,7 @@ public class MainMenu implements Screen, InputProcessor {
 		{
 			InetAddress address = InetAddress.getByName(address_str);
 			DatagramSocket socket = new DatagramSocket();
-			NetworkHelper.send(socket, address, PongServer.SERVER_PORT, Task.REGISTER_PLAYER);
+			NetworkHelper.send(socket, address, PongServer.DEFAULT_PORT, Task.REGISTER_PLAYER);
 			System.out.println("MainMenu : Packet sent");
 			connectionStatusLabel.setText("Packet sent");
 			

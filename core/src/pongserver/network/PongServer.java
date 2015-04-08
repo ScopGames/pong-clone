@@ -14,7 +14,7 @@ import pongserver.utility.Player;
 public class PongServer 
 {
 	private ArrayList<Player> clients;
-	public final static int SERVER_PORT = 9876;
+	public final static int DEFAULT_PORT = 9876;
 	
 	DatagramSocket socketReceive;
 	
@@ -27,7 +27,7 @@ public class PongServer
 	{
 		try 
 		{
-			socketReceive = new DatagramSocket(SERVER_PORT);
+			socketReceive = new DatagramSocket(DEFAULT_PORT);
 		} 
 		catch (SocketException e) 
 		{	
