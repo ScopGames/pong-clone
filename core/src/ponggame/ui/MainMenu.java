@@ -137,7 +137,7 @@ public class MainMenu implements Screen, InputProcessor {
 			}
 		});
 		
-		connectionStatusLabel = new Label("placeholder...", labelStyle);
+		connectionStatusLabel = new Label("", labelStyle);
 		
 		multiplayerButton.addListener(new ClickListener() {
 			@Override
@@ -234,31 +234,22 @@ public class MainMenu implements Screen, InputProcessor {
 		};
 	}
 	
+	/**
+	 * 
+	 * @param address_str the address written in the ipInput text field.
+	 */
 	private void connectToServer(String address_str)
 	{		
 		try 
 		{
-			// sending
 			InetAddress address = InetAddress.getByName(address_str);
 			DatagramSocket socket = new DatagramSocket();
 			NetworkHelper.send(socket, address, PongServer.SERVER_PORT, Task.REGISTER_PLAYER);
 			System.out.println("MainMenu : Packet sent");
 			connectionStatusLabel.setText("Packet sent");
 			
-			
 			Thread t = new Thread(new ReceivingHandler(socket, connectionStatusLabel));
 			t.start();
-			//TODO maybe do this in another thread ? 
-			// receiving
-			/*System.out.println("MainMenu: Listening...");
-			connectionStatusLabel.setText("Waiting for other players to connect");
-			DatagramPacket packet = NetworkHelper.receive(socket);
-			Task task = (Task)NetworkHelper.deserialize(packet.getData());
-			
-			System.out.println("Receveid packet. Task = " + task);
-			connectionStatusLabel.setText("Task = " + task);
-			*/
-			//Main.changeScreen(Screens.PONGGAME_MULTIPLAYER);
 		} 
 		catch (SocketException e)
 		{
