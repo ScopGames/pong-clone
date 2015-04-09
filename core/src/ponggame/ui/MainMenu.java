@@ -40,6 +40,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.utils.Timer;
 
 public class MainMenu implements Screen, InputProcessor {
 	private Stage stage = new Stage();
@@ -182,14 +183,17 @@ public class MainMenu implements Screen, InputProcessor {
 		multiplayerTable.setVisible(false);
 	}
 	
-	private void initializeActions() {
+	private void initializeActions() 
+	{
 		final Tween menuTweenShow = new Tween(Interpolation.exp5Out, 0, -150, 1.0f);
 		//menuTweenShow.setRepeatMode(RepeatMode.REPEAT_PINGPONG);
 		final Tween menuTweenHide = new Tween(Interpolation.exp5Out, -150, 0, 1.0f);
 		
-		showMultiplayerMenu = new Action() {
+		showMultiplayerMenu = new Action() 
+		{
 			@Override
-			public boolean act(float delta) {
+			public boolean act(float delta) 
+			{
 				boolean done = false;
 				menuTweenShow.update(delta);
 				
@@ -210,9 +214,11 @@ public class MainMenu implements Screen, InputProcessor {
 			}
 		};
 		
-		hideMultiplayerMenu = new Action() {
+		hideMultiplayerMenu = new Action() 
+		{
 			@Override
-			public boolean act(float delta) {
+			public boolean act(float delta) 
+			{
 				boolean done = false;
 					
 				menuTweenHide.update(delta);
@@ -248,8 +254,22 @@ public class MainMenu implements Screen, InputProcessor {
 			System.out.println("MainMenu : Packet sent");
 			connectionStatusLabel.setText("Packet sent");
 			
-			Thread t = new Thread(new ReceivingHandler(socket, connectionStatusLabel));
+			final Thread t = new Thread(new ReceivingHandler(socket, connectionStatusLabel));
+			Timer timer = new Timer();
 			t.start();
+			
+			// TODO check if this works
+			timer.scheduleTask(new Timer.Task() 
+			{	
+				@Override
+				public void run() 
+				{
+					t.interrupt();
+					System.out.println("Thread stopped");
+					connectionStatusLabel.setText("No repsonse...");
+				}
+			}, 2);
+			
 		} 
 		catch (SocketException e)
 		{
@@ -343,17 +363,22 @@ public class MainMenu implements Screen, InputProcessor {
 		
 		public void run()
 		{
-		    System.out.println("NewThread: Listening...");
-			tconnection.setText("Waiting...");
+			System.out.println("Thread: Waiting for server response");
+			tconnection.setText("Connecting...");
 			DatagramPacket packet;
 			Task task;
 			
 			try 
 			{
-				packet = NetworkHelper.receive(this.tsocket);
-				task = (Task)NetworkHelper.deserialize(packet.getData());
+				do
+				{
+					packet = NetworkHelper.receive(this.tsocket);
+					task = (Task)NetworkHelper.deserialize(packet.getData());
+					System.out.println("Receveid packet. Task = " + task);
+					tconnection.setText("Task = " + task);					
+				}
+				while (task != Task.START_GAME);
 				System.out.println("Receveid packet. Task = " + task);
-				tconnection.setText("Task = " + task);
 			} 
 			catch (IOException e) 
 			{
