@@ -269,7 +269,6 @@ public class MainMenu implements Screen, InputProcessor {
 					connectionStatusLabel.setText("No repsonse...");
 				}
 			}, 2);
-			
 		} 
 		catch (SocketException e)
 		{
@@ -379,6 +378,8 @@ public class MainMenu implements Screen, InputProcessor {
 				}
 				while (task != Task.START_GAME);
 				System.out.println("Receveid packet. Task = " + task);
+				
+				Main.changeScreen(Screens.MULTIPLAYER_PONG_GAME);
 			} 
 			catch (IOException e) 
 			{
