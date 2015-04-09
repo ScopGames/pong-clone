@@ -1,4 +1,4 @@
-package ponggame;
+package ponggame.screen;
 
 import ponggame.entity.Ball;
 import ponggame.entity.Paddle;
