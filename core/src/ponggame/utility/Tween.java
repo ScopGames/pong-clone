@@ -3,7 +3,7 @@ package ponggame.utility;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 
-/** Interpolates values using differents easing equations.
+/** Interpolates values using different easing equations.
  * 
  * Helper class for gdx.utils.Interpolation. */
 public class Tween {	

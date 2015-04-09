@@ -90,11 +90,21 @@ public class PongServer
 		{
 			clients.add(new Player(packet.getAddress(),packet.getPort()));
 			
-			if (clients.size() == 2)
+			try 
 			{
-				try 
+				DatagramSocket socket = new DatagramSocket();
+				
+				if (clients.size() == 1)
 				{
-					DatagramSocket socket = new DatagramSocket();
+					Player player0 = clients.get(0);
+					NetworkHelper.send(socket, 
+							player0.ipaddress, 
+							player0.port, 
+							Task.CONNECTED);
+				}
+				
+				if (clients.size() == 2)
+				{
 					System.out.println("PongServer - Starting game - Sending two packets");
 					
 					NetworkHelper.send(socket, 
@@ -109,17 +119,15 @@ public class PongServer
 					
 					//TODO close the socket ? 
 				} 
-				catch (SocketException e1) 
-				{
-					//TODO
-					e1.printStackTrace();
-				}				
-				catch (Exception e) 
-				{
-					//TODO
-					e.printStackTrace();
-				} 
 			}
+			catch (SocketException e1) 
+			{
+				e1.printStackTrace();
+			}				
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			} 
 		}
 		else
 			System.out.println("all players already connected");

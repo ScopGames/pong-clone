@@ -11,7 +11,7 @@ import java.net.InetAddress;
 
 public class NetworkHelper 
 {	
-	public static enum Task {REGISTER_PLAYER, UPDATE_PADDLE, START_GAME}	
+	public static enum Task {REGISTER_PLAYER, UPDATE_PADDLE, START_GAME, CONNECTED}	
        
 	public static DatagramPacket receive(DatagramSocket socket) throws IOException
     {
