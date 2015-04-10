@@ -1,11 +1,8 @@
-package ponggame.ui;
+package ponggame.screen;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 
 import ponggame.Main;
 import ponggame.Main.Screens;
@@ -40,7 +37,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
-import com.badlogic.gdx.utils.Timer;
 
 public class MainMenu implements Screen, InputProcessor {
 	private Stage stage = new Stage();
@@ -53,6 +49,8 @@ public class MainMenu implements Screen, InputProcessor {
 	private Skin skin;
 	private BitmapFont mainFont;
 	private Action showMultiplayerMenu, hideMultiplayerMenu;
+	private static Task threadTask;
+	DatagramSocket socket = NetworkHelper.getSocket();
 	
 	@Override
 	public void show() {
@@ -181,6 +179,22 @@ public class MainMenu implements Screen, InputProcessor {
 		multiplayerTable.moveBy(mainTable.getWidth()/2, 0);
 		//multiplayerTable.debug();
 		multiplayerTable.setVisible(false);
+		
+		stage.addAction(new Action() {
+			@Override
+			public boolean act(float delta) {
+				boolean done = false;
+				
+				if (threadTask == Task.INIT_GAME)
+				{
+					
+					Main.startMultiplayerPong(socket);
+					done = true;
+				}
+
+				return done;
+			}
+		});
 	}
 	
 	private void initializeActions() 
@@ -246,42 +260,28 @@ public class MainMenu implements Screen, InputProcessor {
 	 */
 	private void connectToServer(String address_str)
 	{		
-		try 
-		{
-			InetAddress address = InetAddress.getByName(address_str);
-			DatagramSocket socket = new DatagramSocket();
-			NetworkHelper.send(socket, address, PongServer.DEFAULT_PORT, Task.REGISTER_PLAYER);
-			System.out.println("MainMenu : Packet sent");
-			connectionStatusLabel.setText("Packet sent");
+		NetworkHelper.send(socket, address_str, PongServer.DEFAULT_PORT, Task.REGISTER_PLAYER);
+		System.out.println("MainMenu : Packet sent");
+		connectionStatusLabel.setText("Packet sent");
+		
+		Thread t = new Thread(new ReceivingHandler(socket, connectionStatusLabel));
+		t.start();
+
+		/*Timer timer = new Timer();
 			
-			final Thread t = new Thread(new ReceivingHandler(socket, connectionStatusLabel));
-			Timer timer = new Timer();
-			t.start();
-			
-			// TODO check if this works
-			timer.scheduleTask(new Timer.Task() 
-			{	
-				@Override
-				public void run() 
-				{
+		// TODO check if this works
+		timer.scheduleTask(new Timer.Task() 
+		{	
+			@Override
+			public void run() 
+			{
+				String s = new String("Task = CONNECTED\n");
+				if(connectionStatusLabel.getText().toString() == s)
 					t.interrupt();
-					System.out.println("Thread stopped");
-					connectionStatusLabel.setText("No repsonse...");
-				}
-			}, 2);
-		} 
-		catch (SocketException e)
-		{
-			e.printStackTrace();
-		}
-		catch (UnknownHostException e)
-		{
-			e.printStackTrace();
-		}
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		}
+				System.out.println("Thread stopped");
+				connectionStatusLabel.setText("No repsonse...");
+			}
+		}, 2);*/
 	}
 	
 	@Override
@@ -371,15 +371,17 @@ public class MainMenu implements Screen, InputProcessor {
 			{
 				do
 				{
+					System.out.println("THREAD__ port: " + tsocket.getPort() + " local port: " + tsocket.getLocalPort());
 					packet = NetworkHelper.receive(this.tsocket);
 					task = (Task)NetworkHelper.deserialize(packet.getData());
 					System.out.println("Receveid packet. Task = " + task);
-					tconnection.setText("Task = " + task);					
+					tconnection.setText("Task = " + task);
+					threadTask = task;
 				}
-				while (task != Task.START_GAME);
+				while (task != Task.INIT_GAME);
+							
 				System.out.println("Receveid packet. Task = " + task);
-				
-				Main.changeScreen(Screens.MULTIPLAYER_PONG_GAME);
+				threadTask = task;
 			} 
 			catch (IOException e) 
 			{
