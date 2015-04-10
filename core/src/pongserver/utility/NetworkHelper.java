@@ -8,36 +8,89 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+
+import com.badlogic.gdx.math.Vector2;
 
 public class NetworkHelper 
 {	
-	public static enum Task {REGISTER_PLAYER, UPDATE_PADDLE, START_GAME, CONNECTED}	
+	public static enum Task {REGISTER_PLAYER, UPDATE_PADDLE, INIT_GAME, CONNECTED, UPDATE_BALL}	
        
-	public static DatagramPacket receive(DatagramSocket socket) throws IOException
+	public static DatagramPacket receive(DatagramSocket socket)
     {
     	byte[] buffer = new byte[1024];
     	DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
     	
-    	socket.receive(receivePacket); // blocking function
+    	try 
+    	{
+    		socket.receive(receivePacket); // blocking function
+    	}
+    	catch(IOException e)
+    	{
+    		// TODO
+    	}
        	
     	return receivePacket;
     }
     
-    public static void send(DatagramSocket socket, InetAddress address, int port, Task task) throws Exception 
+    public static void send(DatagramSocket socket, String address, int port, Task task)
+    {	
+    	InetAddress iAddress;
+		try 
+		{
+			iAddress = InetAddress.getByName(address);
+			send(socket, iAddress, port, task); 
+		} 
+		catch (UnknownHostException e) 
+		{
+			e.printStackTrace();
+		}
+    }
+    
+    public static void send(DatagramSocket socket, InetAddress address, int port, Task task) 
     {		
-		byte[] buffer = serialize(task); 
+		byte[] buffer;
 		
-		if (buffer.length < 1024)
+		try 
 		{
-			DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, address, port);
-			socket.send(sendPacket);
-			//socket.close();
-			// maybe close the socket ? 
-		}
-		else
+			buffer = serialize(task);
+			
+			if (buffer.length < 1024)
+			{
+				DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, address, port);
+				socket.send(sendPacket);
+				//socket.close();
+				// maybe close the socket ? 
+			}
+		} 
+		catch (IOException e) 
 		{
-			throw new Exception("Can't send data greater than 1024 bytes");
-		}
+			e.printStackTrace();
+		} 
+    }
+    
+    public static void send(DatagramSocket socket, InetAddress address, int port, Task task, ArrayList<Vector2> gameData) 
+    {		
+		byte[] buffer;
+		
+		try 
+		{
+			buffer = serialize(gameData);
+			
+			if (buffer.length < 1024)
+			{
+				DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, address, port);
+				socket.send(sendPacket);
+				//socket.close();
+				// maybe close the socket ? 
+			}
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		} 
     }
          
 	public static byte[] serialize(Object obj) throws IOException 
@@ -54,5 +107,47 @@ public class NetworkHelper
 	    ByteArrayInputStream in = new ByteArrayInputStream(data);
 	    ObjectInputStream is = new ObjectInputStream(in);
 	    return is.readObject();
+	}
+	
+	/**
+	 * Warning, do not use this function unless you know
+	 * what you are doing !
+	 * @return 
+	 */
+	public static DatagramSocket getSocket(int port)
+	{
+		DatagramSocket sock = null;
+		
+		try 
+		{
+			sock = new DatagramSocket(port);	
+		} 
+		catch (SocketException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		return sock;
+	}
+	
+	/**
+	 * Warning, do not use this function unless you know
+	 * what you are doing !
+	 * @return 
+	 */
+	public static DatagramSocket getSocket()
+	{
+	DatagramSocket sock = null;
+		
+		try 
+		{
+			sock = new DatagramSocket();	
+		} 
+		catch (SocketException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		return sock;
 	}
 }

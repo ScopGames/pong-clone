@@ -1,23 +1,32 @@
 package pongserver;
 
-import java.io.IOException;
 import java.net.SocketException;
 
 import pongserver.network.PongServer;
 
 
-public class PongServerLauncher {
+public class PongServerLauncher 
+{
 
-	public static void main(String[] args) {
+	public static void main(String[] args) 
+	{
 		try 
 		{
 			PongServer server = new PongServer();	
-			
-			server.start();
-			
-			while(true) // change this
+						
+			while(server.gameState == PongServer.GAME_STATE.PLAYERS_CONNECTING)
 			{
 				server.listen();
+			}
+			
+			//Thread listeningT = new Thread(new ListenHandler());
+			//listeningT.run();
+			
+			server.printClientsInfo();
+			
+			while(server.gameState == PongServer.GAME_STATE.STARTED)
+			{
+				server.sendDataToPlayers();
 			}
 			
 			//server.stop();
@@ -26,9 +35,14 @@ public class PongServerLauncher {
 		{
 			e.printStackTrace();
 		}
-		catch (IOException e) 
+	}
+	
+	static class ListenHandler implements Runnable
+	{
+		@Override
+		public void run() 
 		{
-			e.printStackTrace();
-		}
+			
+		}	
 	}
 }
