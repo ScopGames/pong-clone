@@ -37,6 +37,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.utils.Timer;
 
 public class MainMenu implements Screen, InputProcessor {
 	private Stage stage = new Stage();
@@ -187,7 +188,6 @@ public class MainMenu implements Screen, InputProcessor {
 				
 				if (threadTask == Task.INIT_GAME)
 				{
-					
 					Main.startMultiplayerPong(socket);
 					done = true;
 				}
@@ -264,24 +264,34 @@ public class MainMenu implements Screen, InputProcessor {
 		System.out.println("MainMenu : Packet sent");
 		connectionStatusLabel.setText("Packet sent");
 		
-		Thread t = new Thread(new ReceivingHandler(socket, connectionStatusLabel));
+		final Thread t = new Thread(new ReceivingHandler(socket, connectionStatusLabel));
 		t.start();
 
-		/*Timer timer = new Timer();
+		Timer timer = new Timer();			
+		float timeout = 5; // seconds
 			
 		// TODO check if this works
 		timer.scheduleTask(new Timer.Task() 
-		{	
+		{
 			@Override
 			public void run() 
-			{
-				String s = new String("Task = CONNECTED\n");
-				if(connectionStatusLabel.getText().toString() == s)
+			{				
+				
+				// If the server doesn't respond in 5 seconds, and the thread is
+				//alive, then interrupt the thread.
+				if(threadTask != Task.CONNECTED && t.isAlive())
+				{ 
 					t.interrupt();
-				System.out.println("Thread stopped");
-				connectionStatusLabel.setText("No repsonse...");
+					connectionStatusLabel.setText("No repsonse...");
+					System.out.println("Thread stopped");
+				}				
+				//else means that: 
+				// - one player is connected and he is waiting for the other one
+				// to connect, doesn't interrupt the thread. 
+				// or
+				// -  both players are connected, the thread is finished.
 			}
-		}, 2);*/
+		}, timeout);
 	}
 	
 	@Override
