@@ -54,7 +54,8 @@ public class MainMenu implements Screen, InputProcessor {
 	DatagramSocket socket = NetworkHelper.getSocket();
 	
 	@Override
-	public void show() {
+	public void show() 
+	{
 		Gdx.input.setInputProcessor(stage);
 		
 		// initialize table field
@@ -66,7 +67,8 @@ public class MainMenu implements Screen, InputProcessor {
 	}
 
 	@Override
-	public void render(float delta) {
+	public void render(float delta) 
+	{
 		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
@@ -88,7 +90,7 @@ public class MainMenu implements Screen, InputProcessor {
 		textButtonStyle.down = skin.getDrawable("button_afa");
 		textButtonStyle.font = mainFont;
 		
-		singlePlayerButton = new TextButton("Single Player", textButtonStyle);		
+		singlePlayerButton = new TextButton("Single Player", textButtonStyle);
 		singlePlayerButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -181,9 +183,11 @@ public class MainMenu implements Screen, InputProcessor {
 		//multiplayerTable.debug();
 		multiplayerTable.setVisible(false);
 		
-		stage.addAction(new Action() {
+		stage.addAction(new Action() 
+		{
 			@Override
-			public boolean act(float delta) {
+			public boolean act(float delta) 
+			{
 				boolean done = false;
 				
 				if (threadTask == Task.INIT_GAME)
@@ -382,7 +386,6 @@ public class MainMenu implements Screen, InputProcessor {
 			{
 				do
 				{
-					System.out.println("THREAD__ port: " + tsocket.getPort() + " local port: " + tsocket.getLocalPort());
 					packet = NetworkHelper.receive(this.tsocket);
 					task = (Task)NetworkHelper.deserialize(packet.getData());
 					System.out.println("Receveid packet. Task = " + task);
