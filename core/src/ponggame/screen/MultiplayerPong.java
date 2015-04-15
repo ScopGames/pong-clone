@@ -3,8 +3,6 @@ package ponggame.screen;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.ArrayList;
 
 import ponggame.entity.Ball;
@@ -17,25 +15,24 @@ import pongserver.utility.NetworkHelper;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class MultiplayerPong implements Screen {
 
-	private int port;
 	private DatagramSocket msocket;
-	private InetAddress serverAddress;
 	private SpriteBatch batch;
 	private Paddle paddleLeft, paddleRight;
 	private Ball ball;
 	private Score score;
 	private PlayerInput input1; //input2;
+	private FPSLogger fpsLogger;
 	
 	public MultiplayerPong(DatagramSocket socket) 
 	{
-		//this.port = port;
 		this.msocket = socket;
 	}
 	
@@ -46,33 +43,28 @@ public class MultiplayerPong implements Screen {
 		score = new Score();
 		
 		initializePaddles();
-		input1 = new PlayerInput(paddleLeft, PlayerInput.layoutInput.WASD);
 		initializeBall();
+		
+		input1 = new PlayerInput(paddleLeft, PlayerInput.layoutInput.WASD);
 
 		//TODO check why this line crashes...
 		//DatagramSocket socket = NetworkHelper.getSocket(port);
-		System.out.println("listening on " + msocket.getLocalAddress() + " " + msocket.getLocalPort());
-		DatagramPacket packet = NetworkHelper.receive(msocket);
-		serverAddress = packet.getAddress();
 		
-		try 
-		{
-			ArrayList<Vector2> gameData = (ArrayList<Vector2>) NetworkHelper.deserialize(packet.getData());
-			
-			ball.setPosition(gameData.get(0).x, gameData.get(0).y);
-			paddleLeft.setPosition(gameData.get(1).x, gameData.get(1).y);
-			paddleRight.setPosition(gameData.get(2).x, gameData.get(2).y);
-			System.out.println("packet received");
-			System.out.println("paddle right y: " + paddleRight.getY());
-		} 
-		catch (ClassNotFoundException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
+		System.out.println("listening on " + msocket.getLocalAddress() + " " + msocket.getLocalPort());
+		
+		//syncWithServer();
+		Thread t = new Thread(new Runnable() 
+		{		
+			@Override
+			public void run() 
+			{
+				while(true)
+					syncWithServer();
+			}
+		});
+		t.start();
+
+		fpsLogger = new FPSLogger();
 	}
 
 	@Override
@@ -80,24 +72,14 @@ public class MultiplayerPong implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		batch.begin();
-		
-		/*if (score.getScore(players.PLAYER1) == winningScore)
-		{
-			Gdx.app.log("player1", "wins");
-		}
-		else if (score.getScore(players.PLAYER2) == winningScore)
-		{
-			Gdx.app.log("player2", "wins");
-		}
-		else
-		{
-			updateGameEntities(delta);
-		*/
-		
+				
 		updateGameEntities(delta);
+		
 		drawGameEntities();
-		score.render(batch);
-						
+			
+		//score.render(batch);
+		fpsLogger.log();
+		
 		batch.end();
 	}	
 	
@@ -129,29 +111,23 @@ public class MultiplayerPong implements Screen {
 	private void initializePaddles()
 	{
 		// Left paddle
-		paddleLeft = new Paddle(new Color(1,0,0,1), new Vector2(0,200));
+		paddleLeft = new Paddle(new Color(1,0,0,1), new Vector2());
 		
 		// Right paddle
-		paddleRight = new Paddle(new Color(0,1,0,1), new Vector2(Gdx.app.getGraphics().getWidth()-20,200));
+		paddleRight = new Paddle(new Color(0,1,0,1), new Vector2());
 	}
 	
 	private void initializeBall() 
-	{
-		float speed = 300;
+	{		
+		Vector2 dummy = new Vector2();
 		
-		float paddleWidth = paddleLeft.getWidth();
-		Vector2 position = new Vector2(100, 100);
-		Vector2 velocity = new Vector2(speed, speed);
-		
-		ball = new Ball(position, velocity);
+		ball = new Ball(dummy, dummy);
 	}
 	
 	private void updateGameEntities(float delta) 
 	{	
 		input1.handleInput(delta);
-		
-		ball.update(delta, paddleLeft, paddleRight);
-		
+				
 		if (ballLost())
 		{
 			updateUI();
@@ -183,5 +159,30 @@ public class MultiplayerPong implements Screen {
 			lost = true;
 		
 		return lost;
+	}
+	
+	/**
+	 * Sync the game's state with the server
+	 */
+	private void syncWithServer()
+	{
+		DatagramPacket packet = NetworkHelper.receive(msocket);
+		
+		try 
+		{
+			ArrayList<Vector2> gameData = (ArrayList<Vector2>) NetworkHelper.deserialize(packet.getData());
+			
+			ball.setPosition(gameData.get(0).x, gameData.get(0).y);
+			paddleLeft.setPosition(gameData.get(1).x, gameData.get(1).y);
+			paddleRight.setPosition(gameData.get(2).x, gameData.get(2).y);
+		} 
+		catch (ClassNotFoundException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
 	}
 }
