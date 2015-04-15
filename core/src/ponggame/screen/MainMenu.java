@@ -308,6 +308,7 @@ public class MainMenu implements Screen, InputProcessor {
 
 	@Override
 	public void hide() {
+		dispose();
 	}
 
 	@Override
