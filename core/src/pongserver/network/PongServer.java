@@ -6,11 +6,11 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
 
-import com.badlogic.gdx.math.Vector2;
-
 import pongserver.utility.NetworkHelper;
 import pongserver.utility.NetworkHelper.Task;
 import pongserver.utility.Player;
+
+import com.badlogic.gdx.math.Vector2;
 
 
 public class PongServer 
@@ -22,7 +22,6 @@ public class PongServer
 	public GAME_STATE gameState;
 	public final static int DEFAULT_PORT = 9876;
 	public enum GAME_STATE {PLAYERS_CONNECTING, STARTED};
-	
 		
 	public PongServer() throws SocketException
 	{
@@ -30,11 +29,11 @@ public class PongServer
 		socketReceive = NetworkHelper.getSocket(DEFAULT_PORT);
 		gameState = GAME_STATE.PLAYERS_CONNECTING;
 		
+		// TODO use a random position
 		ballPosition = new Vector2(100,100);
 		
 		System.out.println("Listening...");
 		System.out.println("PongServer Local Port: " + socketReceive.getLocalPort());
-		//System.out.println("PongServer Port: " + socketReceive.getPort()); prints -1
 	}
 		
 	public void stop()
@@ -70,16 +69,20 @@ public class PongServer
 		}
 	}
 	
+	/**
+	 * TODO Complete this method ! Now it uses fixed values, so it's 
+	 * completely useless ! 
+	 */	
 	public void sendDataToPlayers()
 	{
 		ArrayList<Vector2> data = new ArrayList<Vector2>();
 		
 		data.add(ballPosition);
 		
-		clients.get(0).setPosition(new Vector2(0,250));
+		clients.get(0).setPosition(new Vector2(0, 250));
 		data.add(clients.get(0).position);
 		
-		clients.get(1).setPosition(new Vector2(600,250));
+		clients.get(1).setPosition(new Vector2(600, 250));
 		data.add(clients.get(1).position);
 		
 		for (Player player : clients) 
