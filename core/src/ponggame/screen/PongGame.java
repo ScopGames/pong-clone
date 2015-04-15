@@ -124,7 +124,8 @@ public class PongGame implements Screen
 		float speed = 300;
 		
 		float paddleWidth = paddleLeft.getWidth();
-		Vector2 position = new Vector2(paddleWidth + MathUtils.random(200), MathUtils.random(Gdx.graphics.getHeight()-50));
+		Vector2 position = new Vector2(paddleWidth + MathUtils.random(200), 
+				MathUtils.random(50, Gdx.graphics.getHeight()-50));
 		Vector2 velocity = new Vector2(speed, speed*MathUtils.randomSign());
 		
 		ball = new Ball(position, velocity);
