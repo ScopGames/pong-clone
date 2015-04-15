@@ -10,19 +10,24 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Ball extends Sprite
 {
-	private int width = 50;
-	private int height = 50;
+	private int width = 20;
+	private int height = 20;
 	private Vector2 velocity;
 	
 	private boolean overlapped = false;
 	//private rotationSpeed = 0;
 	
-	public Ball(Vector2 position, Vector2 velocity)
+	public Ball()
 	{			
 		Pixmap pixmap = new Pixmap(width, height, Format.RGBA8888);
 		pixmap.setColor(1,0,0,1);
 		pixmap.fillCircle(width/2, height/2, width/2 - 1);
 		this.set(new Sprite(new Texture(pixmap)));
+	}
+	
+	public Ball(Vector2 position, Vector2 velocity)
+	{			
+		this();
 		
 		setPosition(position.x, position.y);
 		this.velocity = velocity;
@@ -43,7 +48,7 @@ public class Ball extends Sprite
 			if (getX() + margin < paddleL.getX() + paddleL.getWidth() ||
 				getX() - margin + width > paddleR.getX())
 			{
-				velocity.y = - velocity.y;	
+				velocity.y = -velocity.y;	
 			}
 		}
 		else
