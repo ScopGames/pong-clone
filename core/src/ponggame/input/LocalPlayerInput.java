@@ -18,6 +18,6 @@ public class LocalPlayerInput extends PlayerInput {
 	@Override
 	void onUpKeyPressed(float delta) 
 	{
-		paddle.moveDown(delta);
+		paddle.moveUp(delta);
 	}
 }
