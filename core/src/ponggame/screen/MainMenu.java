@@ -280,7 +280,6 @@ public class MainMenu implements Screen, InputProcessor {
 			@Override
 			public void run() 
 			{				
-				
 				// If the server doesn't respond in 5 seconds, and the thread is
 				//alive, then interrupt the thread.
 				if(threadTask != Task.CONNECTED && t.isAlive())

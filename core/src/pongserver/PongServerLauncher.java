@@ -29,6 +29,7 @@ public class PongServerLauncher
 				server.sendDataToPlayers();
 			}
 			
+			//listeningT.close();
 			//server.stop();
 		} 
 		catch (SocketException e) 
