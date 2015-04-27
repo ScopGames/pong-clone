@@ -12,7 +12,7 @@ public class Data implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Task mTask;
-	//private GameEntity mGameEntity;
+	private GameEntity mGameEntity;
 	
 	
 	public Data(Task task){
@@ -20,16 +20,11 @@ public class Data implements Serializable {
 		this.mTask = task;
 	}
 	
-	/*public Data(Task task, GameEntity game){
+	public Data(Task task, GameEntity game){
 
 		this(task);
 		this.mGameEntity = game;
 	}
-	
-	/public void updateGame(GameEntity g )
-	{
-		this.mGameEntity = g;
-	}*/
 	
 	public void setTask(Task t){
 		
@@ -40,13 +35,13 @@ public class Data implements Serializable {
 		return mTask;
 	}
 
-	/*public GameEntity getGameEntity(){
+	public GameEntity getGameEntity(){
 		return mGameEntity;
 	}
 
 	public void setGameEntity(GameEntity mGameEntity) {
 		this.mGameEntity = mGameEntity;
-	}*/
+	}
 
 	
 
