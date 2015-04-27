@@ -10,14 +10,14 @@ import ponggame.entity.GameEntity;
 import pongserver.utility.Data;
 import pongserver.utility.NetworkHelper;
 import pongserver.utility.NetworkHelper.Task;
-import pongserver.utility.Player;
+import pongserver.utility.NetworkNode;
 
 import com.badlogic.gdx.math.Vector2;
 
 
 public class PongServer 
 {
-	private ArrayList<Player> clients;
+	private ArrayList<NetworkNode> clients;
 	private DatagramSocket socketReceive;
 	private Vector2 ballPosition;
 	
@@ -27,7 +27,7 @@ public class PongServer
 		
 	public PongServer() throws SocketException
 	{
-		clients = new ArrayList<Player>();
+		clients = new ArrayList<NetworkNode>();
 		socketReceive = NetworkHelper.getSocket(DEFAULT_PORT);
 		gameState = GAME_STATE.PLAYERS_CONNECTING;
 		
@@ -78,13 +78,12 @@ public class PongServer
 	public void sendDataToPlayers()
 	{		
 		GameEntity gameentity = new GameEntity(ballPosition, new Vector2(0, 250), new Vector2(600, 250));
+		Data d = new Data(Task.UPDATE_PADDLE,gameentity);
 		
-		/*Data d = new Data(Task.UPDATE_PADDLE,gameentity);
-		
-		for (Player player : clients) 
+		for (NetworkNode player : clients) 
 		{
 			NetworkHelper.send(socketReceive, player,d);
-		}*/
+		}
 	}
 	
 	private void doTask(Task task, DatagramPacket packet)
@@ -105,7 +104,7 @@ public class PongServer
 		System.out.println("registrato");
 		if(clients.size() < 2)
 		{
-			clients.add(new Player(packet.getAddress(),packet.getPort()));
+			clients.add(new NetworkNode(packet.getAddress(),packet.getPort()));
 			
 			DatagramSocket socket = NetworkHelper.getSocket();
 			Data data = new Data(Task.CONNECTED);
@@ -132,7 +131,7 @@ public class PongServer
 	
 	public void printClientsInfo()
 	{
-		for (Player player : clients) 
+		for (NetworkNode player : clients) 
 		{
 			System.out.println("Player address:" + player.ipaddress + " port:" + player.port);
 		}

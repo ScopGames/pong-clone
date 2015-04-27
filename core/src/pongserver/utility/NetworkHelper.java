@@ -49,7 +49,7 @@ public class NetworkHelper
 		}
     }*/
     
-    public static void send(DatagramSocket socket, Player p, Data d) 
+    public static void send(DatagramSocket socket, NetworkNode p, Data d) 
     {		
 		byte[] buffer;
 		
