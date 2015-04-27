@@ -6,6 +6,8 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
 
+import ponggame.entity.GameEntity;
+import pongserver.utility.Data;
 import pongserver.utility.NetworkHelper;
 import pongserver.utility.NetworkHelper.Task;
 import pongserver.utility.Player;
@@ -51,13 +53,13 @@ public class PongServer
 	{
 		DatagramPacket packet = NetworkHelper.receive(socketReceive); // blocking
 				
-		byte data[] = packet.getData();
+		byte buffer[] = packet.getData();
 				
 		try 
 		{
-			Task task;
-			task = (Task) NetworkHelper.deserialize(data);
-			doTask(task, packet);
+			Data data;
+			data = (Data) NetworkHelper.deserialize(buffer);
+			doTask(data.getTask(), packet);
 		} 
 		catch (ClassNotFoundException e) 
 		{
@@ -74,22 +76,15 @@ public class PongServer
 	 * completely useless ! 
 	 */	
 	public void sendDataToPlayers()
-	{
-		ArrayList<Vector2> data = new ArrayList<Vector2>();
+	{		
+		GameEntity gameentity = new GameEntity(ballPosition, new Vector2(0, 250), new Vector2(600, 250));
 		
-		data.add(ballPosition);
-		
-		clients.get(0).setPosition(new Vector2(0, 250));
-		data.add(clients.get(0).position);
-		
-		clients.get(1).setPosition(new Vector2(600, 250));
-		data.add(clients.get(1).position);
+		/*Data d = new Data(Task.UPDATE_PADDLE,gameentity);
 		
 		for (Player player : clients) 
 		{
-			NetworkHelper.send(socketReceive, player.ipaddress,
-					player.port, Task.UPDATE_BALL, data);
-		}
+			NetworkHelper.send(socketReceive, player,d);
+		}*/
 	}
 	
 	private void doTask(Task task, DatagramPacket packet)
@@ -107,32 +102,24 @@ public class PongServer
 	
 	private void register(DatagramPacket packet)
 	{
+		System.out.println("registrato");
 		if(clients.size() < 2)
 		{
 			clients.add(new Player(packet.getAddress(),packet.getPort()));
 			
 			DatagramSocket socket = NetworkHelper.getSocket();
+			Data data = new Data(Task.CONNECTED);
 			
 			if (clients.size() == 1)
 			{
-				Player player0 = clients.get(0);
-				NetworkHelper.send(socket, 
-						player0.ipaddress, 
-						player0.port, 
-						Task.CONNECTED);
+				NetworkHelper.send(socket, clients.get(0), data);
 			}
 			
 			if (clients.size() == 2)
 			{				
-				NetworkHelper.send(socket, 
-						clients.get(0).ipaddress,
-						clients.get(0).port,
-						Task.INIT_GAME);
-				
-				NetworkHelper.send(socket, 
-						clients.get(1).ipaddress,
-						clients.get(1).port,
-						Task.INIT_GAME);		
+				data.setTask(Task.INIT_GAME);
+				NetworkHelper.send(socket, clients.get(0), data);
+				NetworkHelper.send(socket, clients.get(1), data);
 				
 				gameState = GAME_STATE.STARTED;
 				
