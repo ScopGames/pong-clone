@@ -6,17 +6,17 @@ import java.net.UnknownHostException;
 import com.badlogic.gdx.math.Vector2;
 
 
-public class Player {
+public class NetworkNode {
 	
 	public InetAddress ipaddress;
 	public int port;
 	
-	public Player(InetAddress a, int p)
+	public NetworkNode(InetAddress a, int p)
 	{
 		ipaddress = a;
 		port = p;
 	}
-	public Player (String a, int p)
+	public NetworkNode (String a, int p)
 	{
 		try {
 			ipaddress = InetAddress.getByName(a);
