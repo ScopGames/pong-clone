@@ -5,6 +5,7 @@ import java.net.DatagramSocket;
 import ponggame.screen.MainMenu;
 import ponggame.screen.PongGame;
 import ponggame.screen.MultiplayerPong;
+import pongserver.utility.NetworkNode;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -40,8 +41,8 @@ public class Main extends Game
 		}		
 	}
 	
-	public static void startMultiplayerPong(DatagramSocket socket)
+	public static void startMultiplayerPong(DatagramSocket socket, NetworkNode server)
 	{
-		((Game)Gdx.app.getApplicationListener()).setScreen(new MultiplayerPong(socket));
+		((Game)Gdx.app.getApplicationListener()).setScreen(new MultiplayerPong(socket, server));
 	}
 }

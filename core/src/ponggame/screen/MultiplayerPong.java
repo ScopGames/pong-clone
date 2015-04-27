@@ -3,8 +3,6 @@ package ponggame.screen;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.util.ArrayList;
 
 import ponggame.entity.Ball;
 import ponggame.entity.Paddle;
@@ -12,7 +10,9 @@ import ponggame.input.PlayerInput;
 import ponggame.input.RemotePlayerInput;
 import ponggame.ui.Score;
 import ponggame.ui.Score.players;
+import pongserver.utility.Data;
 import pongserver.utility.NetworkHelper;
+import pongserver.utility.NetworkNode;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -24,8 +24,8 @@ import com.badlogic.gdx.math.Vector2;
 
 public class MultiplayerPong implements Screen {
 
-	private DatagramSocket msocket;
-	private InetAddress serverAddress;
+	private DatagramSocket socket;
+	private NetworkNode server;
 	
 	private SpriteBatch batch;
 	private Paddle paddleLeft, paddleRight;
@@ -34,9 +34,10 @@ public class MultiplayerPong implements Screen {
 	private PlayerInput input1;
 	private FPSLogger fpsLogger;
 	
-	public MultiplayerPong(DatagramSocket socket) 
+	public MultiplayerPong(DatagramSocket socket, NetworkNode server) 
 	{
-		this.msocket = socket;
+		this.socket = socket;
+		this.server = server;
 	}
 	
 	@Override
@@ -52,7 +53,7 @@ public class MultiplayerPong implements Screen {
 		//TODO check why this line crashes...
 		//DatagramSocket socket = NetworkHelper.getSocket(port);
 		
-		System.out.println("listening on " + msocket.getLocalAddress() + " " + msocket.getLocalPort());
+		System.out.println("listening on " + socket.getLocalAddress() + " " + socket.getLocalPort());
 		
 		syncFromServer();
 		
@@ -70,8 +71,8 @@ public class MultiplayerPong implements Screen {
 		// serverAddress is setted by the syncFromServer().
 		input1 = new RemotePlayerInput(paddleLeft, 
 				PlayerInput.layoutInput.WASD, 
-				msocket,
-				serverAddress);
+				socket,
+				server.ipaddress);
 
 		fpsLogger = new FPSLogger();
 	}
@@ -175,18 +176,18 @@ public class MultiplayerPong implements Screen {
 	 */
 	private void syncFromServer()
 	{
-		DatagramPacket packet = NetworkHelper.receive(msocket);
-		
-		if (serverAddress == null) // if serverAddress is not set
-			serverAddress = packet.getAddress();
-		
+		DatagramPacket packet = NetworkHelper.receive(socket);
+				
 		try
 		{
-			ArrayList<Vector2> gameData = (ArrayList<Vector2>) NetworkHelper.deserialize(packet.getData());
+			Data gameData = (Data)NetworkHelper.deserialize(packet.getData());
 			
-			ball.setPosition(gameData.get(0).x, gameData.get(0).y);
-			paddleLeft.setPosition(gameData.get(1).x, gameData.get(1).y);
-			paddleRight.setPosition(gameData.get(2).x, gameData.get(2).y);
+			Vector2 vBall = gameData.getGameEntity().getBall();
+			ball.setPosition(vBall.x, vBall.y);
+			Vector2 vPaddle1 = gameData.getGameEntity().getPaddle1();
+			paddleLeft.setPosition(vPaddle1.x, vPaddle1.y);
+			Vector2 vPaddle2 = gameData.getGameEntity().getPaddle2();
+			paddleRight.setPosition(vPaddle2.x, vPaddle2.y);
 		} 
 		catch (ClassNotFoundException e) 
 		{

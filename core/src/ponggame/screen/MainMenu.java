@@ -11,7 +11,7 @@ import pongserver.network.PongServer;
 import pongserver.utility.Data;
 import pongserver.utility.NetworkHelper;
 import pongserver.utility.NetworkHelper.Task;
-import pongserver.utility.Player;
+import pongserver.utility.NetworkNode;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -53,6 +53,7 @@ public class MainMenu implements Screen, InputProcessor {
 	private BitmapFont mainFont;
 	private Action showMultiplayerMenu, hideMultiplayerMenu;
 	private static Task threadTask;
+	private static NetworkNode server;
 	DatagramSocket socket = NetworkHelper.getSocket();
 	
 	@Override
@@ -137,7 +138,7 @@ public class MainMenu implements Screen, InputProcessor {
 				super.clicked(event, x, y);
 				String ipAddress = ipInput.getText();
 				
-				Player server = new Player(ipAddress,PongServer.DEFAULT_PORT);
+				server = new NetworkNode(ipAddress, PongServer.DEFAULT_PORT);
 				
 				connectToServer(server);
 			}
@@ -196,9 +197,8 @@ public class MainMenu implements Screen, InputProcessor {
 				
 				if (threadTask == Task.INIT_GAME)
 				{
-					System.out.println("asdasdasdasdasdasdasds");
 					done = true;
-					Main.startMultiplayerPong(socket);
+					Main.startMultiplayerPong(socket, server);
 				}
 				
 				return done;
@@ -267,7 +267,7 @@ public class MainMenu implements Screen, InputProcessor {
 	 * 
 	 * @param network info about the server 
 	 */
-	private void connectToServer(Player p)
+	private void connectToServer(NetworkNode p)
 	{
 		Data data = new Data(Task.REGISTER_PLAYER);
 		NetworkHelper.send(socket, p, data);
