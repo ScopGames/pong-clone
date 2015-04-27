@@ -8,8 +8,10 @@ import ponggame.Main;
 import ponggame.Main.Screens;
 import ponggame.utility.Tween;
 import pongserver.network.PongServer;
+import pongserver.utility.Data;
 import pongserver.utility.NetworkHelper;
 import pongserver.utility.NetworkHelper.Task;
+import pongserver.utility.Player;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -135,7 +137,9 @@ public class MainMenu implements Screen, InputProcessor {
 				super.clicked(event, x, y);
 				String ipAddress = ipInput.getText();
 				
-				connectToServer(ipAddress);
+				Player server = new Player(ipAddress,PongServer.DEFAULT_PORT);
+				
+				connectToServer(server);
 			}
 		});
 		
@@ -192,10 +196,11 @@ public class MainMenu implements Screen, InputProcessor {
 				
 				if (threadTask == Task.INIT_GAME)
 				{
-					Main.startMultiplayerPong(socket);
+					System.out.println("asdasdasdasdasdasdasds");
 					done = true;
+					Main.startMultiplayerPong(socket);
 				}
-
+				
 				return done;
 			}
 		});
@@ -260,11 +265,12 @@ public class MainMenu implements Screen, InputProcessor {
 	
 	/**
 	 * 
-	 * @param address_str the address written in the ipInput text field.
+	 * @param network info about the server 
 	 */
-	private void connectToServer(String address_str)
-	{		
-		NetworkHelper.send(socket, address_str, PongServer.DEFAULT_PORT, Task.REGISTER_PLAYER);
+	private void connectToServer(Player p)
+	{
+		Data data = new Data(Task.REGISTER_PLAYER);
+		NetworkHelper.send(socket, p, data);
 		System.out.println("MainMenu : Packet sent");
 		connectionStatusLabel.setText("Packet sent");
 		
@@ -379,22 +385,20 @@ public class MainMenu implements Screen, InputProcessor {
 			System.out.println("Thread: Waiting for server response");
 			tconnection.setText("Connecting...");
 			DatagramPacket packet;
-			Task task;
+			Data data;
 			
 			try 
 			{
 				do
 				{
 					packet = NetworkHelper.receive(this.tsocket);
-					task = (Task)NetworkHelper.deserialize(packet.getData());
-					System.out.println("Receveid packet. Task = " + task);
-					tconnection.setText("Task = " + task);
-					threadTask = task;
+					data = (Data)NetworkHelper.deserialize(packet.getData());
+					System.out.println("Receveid packet. Task = " + data.getTask());
+					tconnection.setText("Task = " + data.getTask());
+					threadTask = data.getTask();
 				}
-				while (task != Task.INIT_GAME);
-							
-				System.out.println("Receveid packet. Task = " + task);
-				threadTask = task;
+				while (threadTask != Task.INIT_GAME);
+				
 			} 
 			catch (IOException e) 
 			{
