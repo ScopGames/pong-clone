@@ -1,6 +1,7 @@
 package pongserver.utility;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -9,16 +10,21 @@ public class Player {
 	
 	public InetAddress ipaddress;
 	public int port;
-	public Vector2 position;
 	
 	public Player(InetAddress a, int p)
 	{
 		ipaddress = a;
 		port = p;
 	}
-	
-	public void setPosition(Vector2 position)
+	public Player (String a, int p)
 	{
-		this.position = position;
+		try {
+			ipaddress = InetAddress.getByName(a);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		port = p;
 	}
+
 }
