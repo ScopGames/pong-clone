@@ -2,6 +2,7 @@ package ponggame.screen;
 
 import ponggame.entity.Ball;
 import ponggame.entity.Paddle;
+import ponggame.input.LocalPlayerInput;
 import ponggame.input.PlayerInput;
 import ponggame.ui.Score;
 import ponggame.ui.Score.players;
@@ -32,8 +33,8 @@ public class PongGame implements Screen
 		score = new Score();
 		
 		initializePaddles();
-		input1 = new PlayerInput(paddleLeft, PlayerInput.layoutInput.WASD);
-		input2 = new PlayerInput(paddleRight, PlayerInput.layoutInput.ARROWS);
+		input1 = new LocalPlayerInput(paddleLeft, PlayerInput.layoutInput.WASD);
+		input2 = new LocalPlayerInput(paddleRight, PlayerInput.layoutInput.ARROWS);
 		initializeBall();
 	}
 

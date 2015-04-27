@@ -35,7 +35,7 @@ public class NetworkHelper
     	return receivePacket;
     }
     
-    public static void send(DatagramSocket socket, String address, int port, Task task)
+    /*public static void send(DatagramSocket socket, String address, int port, Task task)
     {	
     	InetAddress iAddress;
 		try 
@@ -47,19 +47,19 @@ public class NetworkHelper
 		{
 			e.printStackTrace();
 		}
-    }
+    }*/
     
-    public static void send(DatagramSocket socket, InetAddress address, int port, Task task) 
+    public static void send(DatagramSocket socket, Player p, Data d) 
     {		
 		byte[] buffer;
 		
 		try 
 		{
-			buffer = serialize(task);
+			buffer = serialize(d);
 			
 			if (buffer.length < 1024)
 			{
-				DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, address, port);
+				DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, p.ipaddress, p.port);
 				socket.send(sendPacket);
 				//socket.close();
 				// maybe close the socket ? 
@@ -71,27 +71,6 @@ public class NetworkHelper
 		} 
     }
     
-    public static void send(DatagramSocket socket, InetAddress address, int port, Task task, ArrayList<Vector2> gameData) 
-    {		
-		byte[] buffer;
-		
-		try 
-		{
-			buffer = serialize(gameData);
-			
-			if (buffer.length < 1024)
-			{
-				DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, address, port);
-				socket.send(sendPacket);
-				//socket.close();
-				// maybe close the socket ? 
-			}
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		} 
-    }
          
 	public static byte[] serialize(Object obj) throws IOException 
 	{

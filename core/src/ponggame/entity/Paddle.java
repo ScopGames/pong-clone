@@ -37,4 +37,9 @@ public class Paddle extends Sprite
 	{
 		setPosition(getX(), getY() - delta*movement);
 	}
+	
+	public Vector2 getUpdatedPosition(float delta)
+	{
+		return new Vector2(getX(), getY() + delta*movement);
+	}
 }
