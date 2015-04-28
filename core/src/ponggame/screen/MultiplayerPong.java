@@ -31,7 +31,7 @@ public class MultiplayerPong implements Screen {
 	private Paddle paddleLeft, paddleRight;
 	private Ball ball;
 	private Score score;
-	private PlayerInput input1;
+	private PlayerInput input;
 	private FPSLogger fpsLogger;
 	
 	public MultiplayerPong(DatagramSocket socket, NetworkNode server) 
@@ -49,14 +49,11 @@ public class MultiplayerPong implements Screen {
 		initializePaddles();
 		initializeBall();
 		
-
 		//TODO check why this line crashes...
 		//DatagramSocket socket = NetworkHelper.getSocket(port);
 		
 		System.out.println("listening on " + socket.getLocalAddress() + " " + socket.getLocalPort());
-		
-		syncFromServer();
-		
+				
 		Thread t = new Thread(new Runnable() 
 		{		
 			@Override
@@ -68,8 +65,7 @@ public class MultiplayerPong implements Screen {
 		});
 		t.start();
 		
-		// serverAddress is setted by the syncFromServer().
-		input1 = new RemotePlayerInput(paddleLeft, 
+		input = new RemotePlayerInput(paddleLeft, 
 				PlayerInput.layoutInput.WASD, 
 				socket,
 				server.ipaddress);
@@ -136,7 +132,7 @@ public class MultiplayerPong implements Screen {
 	
 	private void updateGameEntities(float delta) 
 	{	
-		input1.handleInput(delta);
+		input.handleInput(delta);
 				
 		if (ballLost())
 		{
