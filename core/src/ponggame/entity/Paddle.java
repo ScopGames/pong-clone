@@ -42,4 +42,9 @@ public class Paddle extends Sprite
 	{
 		return new Vector2(getX(), getY() + delta*movement);
 	}
+	
+	public float getMovement()
+	{
+		return movement;
+	}
 }
