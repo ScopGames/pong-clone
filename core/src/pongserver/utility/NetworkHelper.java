@@ -7,16 +7,23 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-
-import com.badlogic.gdx.math.Vector2;
 
 public class NetworkHelper 
 {	
-	public static enum Task {REGISTER_PLAYER, UPDATE_PADDLE, INIT_GAME, CONNECTED, UPDATE_BALL}	
+	/**
+	 * Task is an enum representing the current state of the network game protocol.
+	 *  
+	 * Quick explanation of the values:
+	 * - INIT_GAME_LEFT: game set up and you are the left paddle
+	 * - INIT_GAME_RIGHT: game set up and you are the right paddle 
+	 * 
+	 */
+	public static enum Task {REGISTER_PLAYER, 
+		UPDATE_GAME_ENTITIES, 
+		INIT_GAME_LEFT,
+		INIT_GAME_RIGHT,
+		CONNECTED}	
        
 	public static DatagramPacket receive(DatagramSocket socket)
     {
