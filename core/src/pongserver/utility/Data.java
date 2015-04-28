@@ -15,13 +15,13 @@ public class Data implements Serializable {
 	private GameEntity mGameEntity;
 	
 	
-	public Data(Task task){
-		
+	public Data(Task task)
+	{	
 		this.mTask = task;
 	}
 	
-	public Data(Task task, GameEntity game){
-
+	public Data(Task task, GameEntity game)
+	{
 		this(task);
 		this.mGameEntity = game;
 	}
