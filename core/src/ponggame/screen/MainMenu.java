@@ -326,6 +326,7 @@ public class MainMenu implements Screen, InputProcessor {
 		mainFont.dispose();
 		atlas.dispose();
 		skin.dispose();
+		System.out.println("MainMenu disposed.");
 	}
 
 	@Override
@@ -397,9 +398,7 @@ public class MainMenu implements Screen, InputProcessor {
 					tconnection.setText("Task = " + data.getTask());
 					threadTask = data.getTask();
 				}
-				while (threadTask != Task.INIT_GAME_LEFT || 
-						threadTask != Task.INIT_GAME_RIGHT );
-				
+				while (threadTask != Task.INIT_GAME_LEFT && threadTask != Task.INIT_GAME_RIGHT);
 			} 
 			catch (IOException e) 
 			{
