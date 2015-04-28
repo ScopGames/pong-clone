@@ -33,21 +33,41 @@ public class MultiplayerPong implements Screen {
 	private Score score;
 	private PlayerInput input;
 	private FPSLogger fpsLogger;
+	private boolean isPaddleLeft;
 	
-	public MultiplayerPong(DatagramSocket socket, NetworkNode server) 
+	public MultiplayerPong(DatagramSocket socket, NetworkNode server, 
+			boolean isPaddleLeft) 
 	{
 		this.socket = socket;
 		this.server = server;
+		this.isPaddleLeft = isPaddleLeft;
 	}
 	
 	@Override
 	public void show() 
 	{
-		batch = new SpriteBatch();
-		score = new Score();
-		
 		initializePaddles();
 		initializeBall();
+		
+		if (isPaddleLeft)
+		{
+			input = new RemotePlayerInput(paddleLeft, 
+					PlayerInput.layoutInput.WASD, 
+					socket,
+					server.ipaddress,
+					isPaddleLeft);
+		}
+		else
+		{
+			input = new RemotePlayerInput(paddleRight, 
+					PlayerInput.layoutInput.WASD, 
+					socket,
+					server.ipaddress,
+					isPaddleLeft);
+		}
+		
+		batch = new SpriteBatch();
+		score = new Score();
 		
 		//TODO check why this line crashes...
 		//DatagramSocket socket = NetworkHelper.getSocket(port);
@@ -64,11 +84,6 @@ public class MultiplayerPong implements Screen {
 			}
 		});
 		t.start();
-		
-		input = new RemotePlayerInput(paddleLeft, 
-				PlayerInput.layoutInput.WASD, 
-				socket,
-				server.ipaddress);
 
 		fpsLogger = new FPSLogger();
 	}
@@ -84,7 +99,7 @@ public class MultiplayerPong implements Screen {
 		drawGameEntities();
 			
 		//score.render(batch);
-		fpsLogger.log();
+		//fpsLogger.log();
 		
 		batch.end();
 	}	
@@ -134,11 +149,11 @@ public class MultiplayerPong implements Screen {
 	{	
 		input.handleInput(delta);
 				
-		if (ballLost())
+		/*if (ballLost())
 		{
 			updateUI();
 			initializeBall();
-		}
+		}*/
 	}
 	
 	private void drawGameEntities() {
@@ -172,6 +187,7 @@ public class MultiplayerPong implements Screen {
 	 */
 	private void syncFromServer()
 	{
+		System.out.println("receiving on port " + socket.getLocalPort());
 		DatagramPacket packet = NetworkHelper.receive(socket);
 				
 		try

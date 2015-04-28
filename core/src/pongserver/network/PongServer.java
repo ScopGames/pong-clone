@@ -3,6 +3,7 @@ package pongserver.network;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 
@@ -18,24 +19,26 @@ import com.badlogic.gdx.math.Vector2;
 public class PongServer 
 {
 	private ArrayList<NetworkNode> clients;
-	private DatagramSocket socketReceive;
-	private Vector2 ballPosition;
+	private DatagramSocket socketReceive, socketSend;
+	private GameEntity gameEntity;
 	
-	public GAME_STATE gameState;
 	public final static int DEFAULT_PORT = 9876;
 	public enum GAME_STATE {PLAYERS_CONNECTING, STARTED};
+	public GAME_STATE gameState;
 		
 	public PongServer() throws SocketException
 	{
 		clients = new ArrayList<NetworkNode>();
 		socketReceive = NetworkHelper.getSocket(DEFAULT_PORT);
+		socketSend = NetworkHelper.getSocket();
 		gameState = GAME_STATE.PLAYERS_CONNECTING;
 		
-		// TODO use a random position
-		ballPosition = new Vector2(100,100);
+		// TODO use a random position ?
+		gameEntity = new GameEntity(new Vector2(100,100), new Vector2(0, 250),
+				new Vector2(640-20, 250)); // 640 is the screen width
 		
-		System.out.println("Listening...");
-		System.out.println("PongServer Local Port: " + socketReceive.getLocalPort());
+		System.out.println("PongServer listeningn on: " + socketReceive.getLocalPort());
+		System.out.println("PongServer sending from: " + socketSend.getLocalPort());
 	}
 		
 	public void stop()
@@ -50,7 +53,7 @@ public class PongServer
 	 * @throws ClassNotFoundException
 	 */
 	public void listen()
-	{
+	{		
 		DatagramPacket packet = NetworkHelper.receive(socketReceive); // blocking
 				
 		byte buffer[] = packet.getData();
@@ -59,7 +62,37 @@ public class PongServer
 		{
 			Data data;
 			data = (Data) NetworkHelper.deserialize(buffer);
-			doTask(data.getTask(), packet);
+			
+			switch (data.getTask())
+			{
+				case REGISTER_PLAYER:
+					register(packet.getAddress(), packet.getPort());
+					break;
+				
+				case UPDATE_GAME_ENTITIES:
+					//System.out.println("updating game entities");
+
+					GameEntity updatedGame = data.getGameEntity();
+					
+					Vector2 vec = updatedGame.getPaddle1();
+					if (vec != null)
+					{
+						System.out.println("updating paddle1" + "x: " + vec.x + " y: " + vec.y);
+						this.gameEntity.setPaddle1(vec);						
+					}
+					
+					vec = updatedGame.getPaddle2();
+					if (vec != null)
+					{
+						System.out.println("updating paddle2" + "x: " + vec.x + " y: " + vec.y);
+						this.gameEntity.setPaddle2(vec);						
+					}
+					
+					break;
+				
+				default:
+					break; 
+			}
 		} 
 		catch (ClassNotFoundException e) 
 		{
@@ -71,40 +104,21 @@ public class PongServer
 		}
 	}
 	
-	/**
-	 * TODO Complete this method ! Now it uses fixed values, so it's 
-	 * completely useless ! 
-	 */	
 	public void sendDataToPlayers()
-	{		
-		GameEntity gameEntity = new GameEntity(ballPosition, new Vector2(0, 250), new Vector2(600, 250));
+	{
 		Data d = new Data(Task.UPDATE_GAME_ENTITIES, gameEntity);
 		
 		for (NetworkNode player : clients) 
 		{
-			NetworkHelper.send(socketReceive, player,d);
-		}
+			NetworkHelper.send(socketSend, player, d);
+		}	
 	}
 	
-	private void doTask(Task task, DatagramPacket packet)
+	private void register(InetAddress address, int port)
 	{
-		switch (task)
-		{
-			case REGISTER_PLAYER:
-				register(packet);
-				break;
-			
-			default:
-				break; 
-		}
-	}
-	
-	private void register(DatagramPacket packet)
-	{
-		System.out.println("registrato");
 		if(clients.size() < 2)
 		{
-			clients.add(new NetworkNode(packet.getAddress(),packet.getPort()));
+			clients.add(new NetworkNode(address, port));
 			
 			DatagramSocket socket = NetworkHelper.getSocket();
 			Data data = new Data(Task.CONNECTED);

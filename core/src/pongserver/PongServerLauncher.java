@@ -7,23 +7,30 @@ import pongserver.network.PongServer;
 
 public class PongServerLauncher 
 {
-
 	public static void main(String[] args) 
 	{
 		try 
 		{
-			PongServer server = new PongServer();	
-						
+			final PongServer server = new PongServer();	
+			
 			while(server.gameState == PongServer.GAME_STATE.PLAYERS_CONNECTING)
 			{
 				server.listen();
 			}
 			
-			//Thread listeningT = new Thread(new ListenHandler());
-			//listeningT.run();
-			
 			server.printClientsInfo();
 			
+			Thread listeningT = new Thread(new Runnable() 
+			{
+				@Override
+				public void run() 
+				{
+					while(server.gameState == PongServer.GAME_STATE.STARTED)
+						server.listen();				
+				}
+			});
+			listeningT.start();
+						
 			while(server.gameState == PongServer.GAME_STATE.STARTED)
 			{
 				server.sendDataToPlayers();
@@ -36,14 +43,5 @@ public class PongServerLauncher
 		{
 			e.printStackTrace();
 		}
-	}
-	
-	static class ListenHandler implements Runnable
-	{
-		@Override
-		public void run() 
-		{
-			
-		}	
 	}
 }

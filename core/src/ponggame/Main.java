@@ -41,8 +41,11 @@ public class Main extends Game
 		}		
 	}
 	
-	public static void startMultiplayerPong(DatagramSocket socket, NetworkNode server)
+	public static void startMultiplayerPong(DatagramSocket socket, 
+			NetworkNode server, 
+			boolean isPaddleLeft)
 	{
-		((Game)Gdx.app.getApplicationListener()).setScreen(new MultiplayerPong(socket, server));
+		((Game)Gdx.app.getApplicationListener()).setScreen(
+				new MultiplayerPong(socket, server, isPaddleLeft));
 	}
 }

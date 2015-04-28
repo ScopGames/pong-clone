@@ -195,10 +195,15 @@ public class MainMenu implements Screen, InputProcessor {
 			{
 				boolean done = false;
 				
-				if (threadTask == Task.INIT_GAME_RIGHT || threadTask == Task.INIT_GAME_LEFT)
+				if (threadTask == Task.INIT_GAME_LEFT)
 				{
 					done = true;
-					Main.startMultiplayerPong(socket, server);
+					Main.startMultiplayerPong(socket, server, true);
+				}
+				else if(threadTask == Task.INIT_GAME_RIGHT)
+				{
+					done = true;
+					Main.startMultiplayerPong(socket, server, false);
 				}
 				
 				return done;
