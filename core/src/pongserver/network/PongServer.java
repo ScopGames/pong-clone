@@ -77,8 +77,8 @@ public class PongServer
 	 */	
 	public void sendDataToPlayers()
 	{		
-		GameEntity gameentity = new GameEntity(ballPosition, new Vector2(0, 250), new Vector2(600, 250));
-		Data d = new Data(Task.UPDATE_PADDLE,gameentity);
+		GameEntity gameEntity = new GameEntity(ballPosition, new Vector2(0, 250), new Vector2(600, 250));
+		Data d = new Data(Task.UPDATE_GAME_ENTITIES, gameEntity);
 		
 		for (NetworkNode player : clients) 
 		{
@@ -116,8 +116,10 @@ public class PongServer
 			
 			if (clients.size() == 2)
 			{				
-				data.setTask(Task.INIT_GAME);
+				data.setTask(Task.INIT_GAME_LEFT);
 				NetworkHelper.send(socket, clients.get(0), data);
+				
+				data.setTask(Task.INIT_GAME_RIGHT);
 				NetworkHelper.send(socket, clients.get(1), data);
 				
 				gameState = GAME_STATE.STARTED;

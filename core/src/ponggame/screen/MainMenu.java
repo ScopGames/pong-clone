@@ -195,7 +195,7 @@ public class MainMenu implements Screen, InputProcessor {
 			{
 				boolean done = false;
 				
-				if (threadTask == Task.INIT_GAME)
+				if (threadTask == Task.INIT_GAME_RIGHT || threadTask == Task.INIT_GAME_LEFT)
 				{
 					done = true;
 					Main.startMultiplayerPong(socket, server);
@@ -397,7 +397,8 @@ public class MainMenu implements Screen, InputProcessor {
 					tconnection.setText("Task = " + data.getTask());
 					threadTask = data.getTask();
 				}
-				while (threadTask != Task.INIT_GAME);
+				while (threadTask != Task.INIT_GAME_LEFT || 
+						threadTask != Task.INIT_GAME_RIGHT );
 				
 			} 
 			catch (IOException e) 
