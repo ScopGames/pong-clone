@@ -123,7 +123,7 @@ public class NetworkHelper
 	 */
 	public static DatagramSocket getSocket()
 	{
-	DatagramSocket sock = null;
+		DatagramSocket sock = null;
 		
 		try 
 		{

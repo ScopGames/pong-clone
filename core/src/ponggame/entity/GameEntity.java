@@ -19,13 +19,13 @@ public class GameEntity implements Serializable {
 	private Vector2 paddle2;
 	private Vector2 ball;
 	
-	boolean p1, p2;
-
-	public GameEntity() {
+	public GameEntity()
+	{
 		// empty constructor
 	}
 	
-	public GameEntity(Vector2 ball, Vector2 paddle1,Vector2 paddle2){
+	public GameEntity(Vector2 ball, Vector2 paddle1,Vector2 paddle2)
+	{
 		this.ball = ball;
 		this.paddle1 = paddle1;
 		this.paddle2 = paddle2;
