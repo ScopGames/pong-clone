@@ -88,6 +88,8 @@ public class PongServer
 						this.gameEntity.setPaddle2(vec);						
 					}
 					
+					//sendDataToPlayers();
+					
 					break;
 				
 				default:

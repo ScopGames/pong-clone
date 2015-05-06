@@ -48,7 +48,7 @@ public class MultiplayerPong implements Screen {
 	{
 		initializePaddles();
 		initializeBall();
-		
+				
 		if (isPaddleLeft)
 		{
 			input = new RemotePlayerInput(paddleLeft, 
@@ -68,9 +68,7 @@ public class MultiplayerPong implements Screen {
 		
 		batch = new SpriteBatch();
 		score = new Score();
-		
-		//TODO check why this line crashes...
-		//DatagramSocket socket = NetworkHelper.getSocket(port);
+
 		
 		System.out.println("listening on " + socket.getLocalAddress() + " " + socket.getLocalPort());
 				
@@ -93,7 +91,7 @@ public class MultiplayerPong implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		batch.begin();
-				
+			
 		updateGameEntities(delta);
 		
 		drawGameEntities();
@@ -187,7 +185,6 @@ public class MultiplayerPong implements Screen {
 	 */
 	private void syncFromServer()
 	{
-		System.out.println("receiving on port " + socket.getLocalPort());
 		DatagramPacket packet = NetworkHelper.receive(socket);
 				
 		try

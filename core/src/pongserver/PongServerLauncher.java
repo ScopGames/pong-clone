@@ -49,6 +49,7 @@ public class PongServerLauncher
 			
 			// Updates the clients with the game state periodically with 
 			// period = responseDelay
+			server.sendDataToPlayers();
 			Timer timer = new Timer();
 			timer.schedule(new TimerTask() 
 			{
