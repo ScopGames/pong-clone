@@ -232,7 +232,6 @@ public class PongServer
 		{
 			System.out.println("Sto andando sù correttamente");
 			
-			
 			if (player == PLAYER.LEFT)
 				gameEntity.setPaddle1(vec);
 			else if (player == PLAYER.RIGHT)

@@ -17,7 +17,7 @@ public class PongServerLauncher
 	 *     1/60 = 16.6 ~= 17
 	 *     
 	 */
-	static long responseDelay = 15; // millis
+	static long responseDelay = 17; // millis
 	
 	public static void main(String[] args) 
 	{

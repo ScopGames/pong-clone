@@ -35,24 +35,23 @@ public class RemotePlayerInput extends PlayerInput {
 	void onDownKeyPressed(float delta) 
 	{
 		float newY = paddle.getY() - delta*paddle.getMovement();
+		
 		GameEntity gameEntity = new GameEntity();
 		
 		if (isPaddleLeft)
 		{
-			gameEntity.setPaddle1(new Vector2(paddle.getX(), 
-					newY));			
+			gameEntity.setPaddle1(new Vector2(paddle.getX(), newY));			
 		}
 		else
 		{
-			gameEntity.setPaddle2(new Vector2(paddle.getX(), 
-					newY));
+			gameEntity.setPaddle2(new Vector2(paddle.getX(), newY));
 		}
 		
 		Data data = new Data(Task.GOING_DOWN, gameEntity);
 		setLastTask(Task.GOING_DOWN);
 		NetworkHelper.send(socket, server, data);
 		
-		tmpPosition = new Vector2(paddle.getX(),newY);
+		tmpPosition = new Vector2(paddle.getX(), newY);
 		paddle.setY(newY);
 	}
 
@@ -60,21 +59,23 @@ public class RemotePlayerInput extends PlayerInput {
 	void onUpKeyPressed(float delta) 
 	{		
 		float newY = paddle.getY() + delta*paddle.getMovement();
+		
 		GameEntity gameEntity = new GameEntity();
 		if (isPaddleLeft)
 		{
-			gameEntity.setPaddle1(new Vector2(paddle.getX(), 
-					paddle.getY() + delta*paddle.getMovement()));
+			gameEntity.setPaddle1(new Vector2(paddle.getX(), newY));
 		}
 		else
 		{
-			gameEntity.setPaddle2(new Vector2(paddle.getX(), 
-					paddle.getY() + delta*paddle.getMovement()));
+			gameEntity.setPaddle2(new Vector2(paddle.getX(), newY));
 		}
 		
 		Data data = new Data(Task.GOING_UP, gameEntity);
-		tmpPosition = new Vector2(paddle.getX(),newY);		
+		setLastTask(Task.GOING_UP);
 		NetworkHelper.send(socket, server, data);
+		
+		tmpPosition = new Vector2(paddle.getX(),newY);		
+		paddle.setY(newY);
 	}
 
 	public Task getLastTask() {

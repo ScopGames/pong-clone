@@ -214,16 +214,20 @@ public class MultiplayerPong implements Screen {
 				if((input.getLastTask() == Task.GOING_DOWN && vPaddle1.y < input.getTmpPosition().y)||
 						(input.getLastTask() == Task.GOING_UP && vPaddle1.y > input.getTmpPosition().y))
 				{
+					// update the paddle with the position sent from the server
 					paddleLeft.setPosition(vPaddle1.x, vPaddle1.y);
 				}
 				else if ((input.getLastTask() == Task.GOING_DOWN && vPaddle1.y > input.getTmpPosition().y)||
 						(input.getLastTask() == Task.GOING_UP && vPaddle1.y < input.getTmpPosition().y))
 				{
+					// update the paddle with the local new Y. This will ignore the 
+					// position sent from the server which is not correct due to 
+					// UDP latency and not ordered packets.
 					paddleLeft.setPosition(vPaddle1.x, input.getTmpPosition().y);
 				}
 				else
 				{
-					System.out.println("non mi sono mosso ");
+					// no movement
 				}
 			}
 			else
@@ -240,7 +244,7 @@ public class MultiplayerPong implements Screen {
 				}
 				else
 				{
-					System.out.println("non mi sono mosso ");
+					// no movement
 				}
 			}
 			
