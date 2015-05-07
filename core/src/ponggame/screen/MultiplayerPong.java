@@ -12,6 +12,7 @@ import ponggame.ui.Score;
 import ponggame.ui.Score.players;
 import pongserver.utility.Data;
 import pongserver.utility.NetworkHelper;
+import pongserver.utility.NetworkHelper.Task;
 import pongserver.utility.NetworkNode;
 
 import com.badlogic.gdx.Gdx;
@@ -32,9 +33,10 @@ public class MultiplayerPong implements Screen {
 	private Paddle paddleLeft, paddleRight;
 	private Ball ball;
 	private Score score;
-	private PlayerInput input;
+	private RemotePlayerInput input;
 	private FPSLogger fpsLogger;
 	private boolean isPaddleLeft;
+	boolean firstSync= true;
 	
 	public MultiplayerPong(DatagramSocket socket, NetworkNode server, 
 			boolean isPaddleLeft) 
@@ -197,9 +199,52 @@ public class MultiplayerPong implements Screen {
 			Vector2 vBall = gameData.getGameEntity().getBall();
 			ball.setPosition(vBall.x, vBall.y);
 			Vector2 vPaddle1 = gameData.getGameEntity().getPaddle1();
-			paddleLeft.setPosition(vPaddle1.x, vPaddle1.y);
 			Vector2 vPaddle2 = gameData.getGameEntity().getPaddle2();
-			paddleRight.setPosition(vPaddle2.x, vPaddle2.y);
+			
+			boolean firstSync= true;
+			if(firstSync == true)
+			{
+				paddleLeft.setPosition(vPaddle1.x, vPaddle1.y);
+				paddleRight.setPosition(vPaddle2.x, vPaddle2.y);
+				firstSync = false;
+			}
+			
+			if(isPaddleLeft)
+			{
+				if((input.getLastTask() == Task.GOING_DOWN && vPaddle1.y < input.getTmpPosition().y)||
+						(input.getLastTask() == Task.GOING_UP && vPaddle1.y > input.getTmpPosition().y))
+				{
+					paddleLeft.setPosition(vPaddle1.x, vPaddle1.y);
+				}
+				else if ((input.getLastTask() == Task.GOING_DOWN && vPaddle1.y > input.getTmpPosition().y)||
+						(input.getLastTask() == Task.GOING_UP && vPaddle1.y < input.getTmpPosition().y))
+				{
+					paddleLeft.setPosition(vPaddle1.x, input.getTmpPosition().y);
+				}
+				else
+				{
+					System.out.println("non mi sono mosso ");
+				}
+			}
+			else
+			{				
+				if((input.getLastTask() == Task.GOING_DOWN && vPaddle2.y < input.getTmpPosition().y)||
+						(input.getLastTask() == Task.GOING_UP && vPaddle2.y > input.getTmpPosition().y))
+				{
+					paddleRight.setPosition(vPaddle2.x, vPaddle2.y);
+				}
+				else if ((input.getLastTask() == Task.GOING_DOWN && vPaddle2.y > input.getTmpPosition().y)||
+						(input.getLastTask() == Task.GOING_UP && vPaddle2.y < input.getTmpPosition().y))
+				{
+					paddleRight.setPosition(vPaddle2.x, input.getTmpPosition().y);
+				}
+				else
+				{
+					System.out.println("non mi sono mosso ");
+				}
+			}
+			
+			
 		} 
 		catch (ClassNotFoundException e) 
 		{
