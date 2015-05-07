@@ -27,6 +27,7 @@ public class MultiplayerPong implements Screen {
 	private DatagramSocket socket;
 	private NetworkNode server;
 	
+	private DatagramPacket packet;
 	private SpriteBatch batch;
 	private Paddle paddleLeft, paddleRight;
 	private Ball ball;
@@ -52,7 +53,7 @@ public class MultiplayerPong implements Screen {
 		if (isPaddleLeft)
 		{
 			input = new RemotePlayerInput(paddleLeft, 
-					PlayerInput.layoutInput.WASD, 
+					PlayerInput.layoutInput.WASD,
 					socket,
 					server.ipaddress,
 					isPaddleLeft);
@@ -67,10 +68,9 @@ public class MultiplayerPong implements Screen {
 		}
 		
 		batch = new SpriteBatch();
-		score = new Score();
 		
-		//TODO check why this line crashes...
-		//DatagramSocket socket = NetworkHelper.getSocket(port);
+		// still not used
+		score = new Score();
 		
 		System.out.println("listening on " + socket.getLocalAddress() + " " + socket.getLocalPort());
 				
@@ -187,9 +187,8 @@ public class MultiplayerPong implements Screen {
 	 */
 	private void syncFromServer()
 	{
-		System.out.println("receiving on port " + socket.getLocalPort());
-		DatagramPacket packet = NetworkHelper.receive(socket);
-				
+		 packet = NetworkHelper.receive(socket);
+		
 		try
 		{
 			Data gameData = (Data)NetworkHelper.deserialize(packet.getData());
