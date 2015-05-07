@@ -193,6 +193,8 @@ public class PongServer
 		} 
 		else
 		{
+			System.out.println("Sto andando giù correttamente");
+			
 			if (player == PLAYER.LEFT)
 				gameEntity.setPaddle1(vec);
 			else if (player == PLAYER.RIGHT)
@@ -218,7 +220,7 @@ public class PongServer
 
 		if (vec.y < paddleY)
 		{
-			System.out.println("[DOWN] -> y nuova : " + vec.y + " y vecchia : " + paddleY);
+			System.out.println("[UP] -> y nuova : " + vec.y + " y vecchia : " + paddleY);
 			//Debug
 			//this.gameEntity.setPaddle2(vec);
 		}
@@ -228,6 +230,9 @@ public class PongServer
 		} 
 		else
 		{
+			System.out.println("Sto andando sù correttamente");
+			
+			
 			if (player == PLAYER.LEFT)
 				gameEntity.setPaddle1(vec);
 			else if (player == PLAYER.RIGHT)
