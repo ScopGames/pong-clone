@@ -17,7 +17,7 @@ public class PongServerLauncher
 	 *     1/60 = 16.6 ~= 17
 	 *     
 	 */
-	static long responseDelay = 20; // millis
+	static long responseDelay = 15; // millis
 	
 	public static void main(String[] args) 
 	{
@@ -49,6 +49,7 @@ public class PongServerLauncher
 			
 			// Updates the clients with the game state periodically with 
 			// period = responseDelay
+					
 			Timer timer = new Timer();
 			timer.schedule(new TimerTask() 
 			{

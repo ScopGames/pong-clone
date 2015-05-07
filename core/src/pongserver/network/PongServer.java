@@ -18,15 +18,22 @@ import com.badlogic.gdx.math.Vector2;
 
 public class PongServer 
 {
+	/**
+	 * clients.get(0) is the left Paddle
+	 * clients.get(0) is the right Paddle
+	 */
 	private ArrayList<NetworkNode> clients;
 	private DatagramSocket socket;
 	private GameEntity gameEntity;
+	private GameEntity updatedGame;
 	private DatagramPacket packet;
 	
 	public final static int DEFAULT_PORT = 9876;
 	public enum GAME_STATE {PLAYERS_CONNECTING, STARTED};
 	public GAME_STATE gameState;
-		
+	
+	private enum PLAYER{LEFT, RIGHT, NOT_A_BANANA}
+	
 	public PongServer() throws SocketException
 	{
 		clients = new ArrayList<NetworkNode>();
@@ -56,108 +63,43 @@ public class PongServer
 		packet = NetworkHelper.receive(socket); // blocking
 				
 		byte buffer[] = packet.getData();
-				
+		
 		try 
 		{
+			PLAYER player;
 			Data data;
-			data = (Data) NetworkHelper.deserialize(buffer);
+			data = (Data) NetworkHelper.deserialize(buffer);			
 			
 			switch (data.getTask())
 			{
 				case REGISTER_PLAYER:
 					register(packet.getAddress(), packet.getPort());
 					break;
-				
-				case UPDATE_GAME_ENTITIES:
-					System.out.println("NONONONO");
-					GameEntity updatedGame = data.getGameEntity();
-					
-					Vector2 vec = updatedGame.getPaddle1();
-					if (vec != null)
-					{
-						this.gameEntity.setPaddle1(vec);						
-					}
-					
-					vec = updatedGame.getPaddle2();
-					if (vec != null)
-					{
-						this.gameEntity.setPaddle2(vec);						
-					}
-					
-					//sendDataToPlayers();
-					
-					break;
-					
+									
 				case GOING_DOWN:
+					player = getPlayerSide();
+					
 					updatedGame = data.getGameEntity();
-					vec = updatedGame.getPaddle1();
 					
-					if (vec != null)
-					{						
-						if (vec.y > gameEntity.getPaddle1().y)
-						{
-							System.out.println("[DOWN] -> y nuova : " + vec.y + "y vecchia : " + gameEntity.getPaddle1().y);
-							//Debug
-							//this.gameEntity.setPaddle2(vec);
-						}
-						else if (vec.y == this.gameEntity.getPaddle1().y)
-						{
-							System.out.println("UGUALE__");
-						} 
-						else
-							this.gameEntity.setPaddle1(vec);						
+					if (player != PLAYER.NOT_A_BANANA)
+					{
+						updatePaddlesDown(player, updatedGame);
 					}
+					else
+						System.out.println("siamo delle banane");
 					
-					vec = updatedGame.getPaddle2();
-					if (vec != null)
-					{						
-						if (vec.y > this.gameEntity.getPaddle2().y)
-						{
-							System.out.println("[DOWN] -> y nuova : " + vec.y + "y vecchia : " + gameEntity.getPaddle2().y);
-							//Debug
-							//this.gameEntity.setPaddle2(vec);
-						}
-						else if (vec.y == this.gameEntity.getPaddle2().y)
-						{
-							System.out.println("UGUALE__");
-						}
-						else
-							this.gameEntity.setPaddle2(vec);
-					}
 					break;
 				
 				case GOING_UP:
+					player = getPlayerSide();
+					
 					updatedGame = data.getGameEntity();
-					vec = updatedGame.getPaddle1();
 					
-					if (vec != null)
+					if (player != PLAYER.NOT_A_BANANA)
 					{
-						if (vec.y < this.gameEntity.getPaddle1().y)
-						{
-							System.out.println("[UP] -> y nuova : " + vec.y + "y vecchia : " + gameEntity.getPaddle1().y);
-						}
-						else if (vec.y == this.gameEntity.getPaddle1().y)
-						{
-							System.out.println("UGUALE__");
-						}
-						else
-							this.gameEntity.setPaddle1(vec);						
+						updatePaddlesUp(player, updatedGame);
 					}
-					
-					vec = updatedGame.getPaddle2();
-					if (vec != null)
-					{
-						if (vec.y < this.gameEntity.getPaddle2().y)
-						{
-							System.out.println("[UP] -> y nuova : " + vec.y + "y vecchia : " + gameEntity.getPaddle2().y);
-						}
-						else if (vec.y == this.gameEntity.getPaddle2().y)
-						{
-							System.out.println("UGUALE__");
-						}
-						else	
-							this.gameEntity.setPaddle2(vec);						
-					}
+									
 					break;
 				
 				default:
@@ -221,5 +163,90 @@ public class PongServer
 		{
 			System.out.println("Player address:" + player.ipaddress + " port:" + player.port);
 		}
+	}
+	
+	private void updatePaddlesDown(PLAYER player, GameEntity updatedGame)
+	{
+		float paddleY;
+		Vector2 vec;
+		
+		if (player == PLAYER.LEFT)
+		{
+			vec = updatedGame.getPaddle1();
+			paddleY = gameEntity.getPaddle1().y;
+		}
+		else  
+		{
+			vec = updatedGame.getPaddle2();
+			paddleY = gameEntity.getPaddle2().y;
+		}
+
+		if (vec.y > paddleY)
+		{
+			System.out.println("[DOWN] -> y nuova : " + vec.y + " y vecchia : " + paddleY);
+			//Debug
+			//this.gameEntity.setPaddle2(vec);
+		}
+		else if (vec.y == paddleY)
+		{
+			System.out.println("UGUALE__");
+		} 
+		else
+		{
+			if (player == PLAYER.LEFT)
+				gameEntity.setPaddle1(vec);
+			else if (player == PLAYER.RIGHT)
+				gameEntity.setPaddle2(vec);
+		}
+	}
+	
+	private void updatePaddlesUp(PLAYER player, GameEntity updatedGame)
+	{
+		float paddleY;
+		Vector2 vec;
+		
+		if (player == PLAYER.LEFT)
+		{
+			vec = updatedGame.getPaddle1();
+			paddleY = gameEntity.getPaddle1().y;
+		}
+		else  
+		{
+			vec = updatedGame.getPaddle2();
+			paddleY = gameEntity.getPaddle2().y;
+		}
+
+		if (vec.y < paddleY)
+		{
+			System.out.println("[DOWN] -> y nuova : " + vec.y + " y vecchia : " + paddleY);
+			//Debug
+			//this.gameEntity.setPaddle2(vec);
+		}
+		else if (vec.y == paddleY)
+		{
+			System.out.println("UGUALE__");
+		} 
+		else
+		{
+			if (player == PLAYER.LEFT)
+				gameEntity.setPaddle1(vec);
+			else if (player == PLAYER.RIGHT)
+				gameEntity.setPaddle2(vec);
+		}
+	}
+	
+	private PLAYER getPlayerSide()
+	{
+		//boolean paddleLeft = false;
+		PLAYER player;	
+		
+		if (clients.get(0).ipaddress.equals(packet.getAddress()) && clients.get(0).port == packet.getPort())
+			player = PLAYER.LEFT;
+		else if (clients.get(1).ipaddress.equals(packet.getAddress()) && clients.get(1).port == packet.getPort()) 
+			player = PLAYER.RIGHT;
+		else
+			player = PLAYER.NOT_A_BANANA;
+		
+		return player;
 	}
 }
