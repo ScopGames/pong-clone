@@ -20,7 +20,9 @@ public class NetworkHelper
 	 * 
 	 */
 	public static enum Task {REGISTER_PLAYER, 
-		UPDATE_GAME_ENTITIES, 
+		UPDATE_GAME_ENTITIES,
+		GOING_UP,
+		GOING_DOWN,
 		INIT_GAME_LEFT,
 		INIT_GAME_RIGHT,
 		CONNECTED}	

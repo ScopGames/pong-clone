@@ -69,6 +69,7 @@ public class PongServer
 					break;
 				
 				case UPDATE_GAME_ENTITIES:
+					System.out.println("NONONONO");
 					GameEntity updatedGame = data.getGameEntity();
 					
 					Vector2 vec = updatedGame.getPaddle1();
@@ -82,7 +83,81 @@ public class PongServer
 					{
 						this.gameEntity.setPaddle2(vec);						
 					}
-					sendDataToPlayers();
+					
+					//sendDataToPlayers();
+					
+					break;
+					
+				case GOING_DOWN:
+					updatedGame = data.getGameEntity();
+					vec = updatedGame.getPaddle1();
+					
+					if (vec != null)
+					{						
+						if (vec.y > gameEntity.getPaddle1().y)
+						{
+							System.out.println("[DOWN] -> y nuova : " + vec.y + "y vecchia : " + gameEntity.getPaddle1().y);
+							//Debug
+							//this.gameEntity.setPaddle2(vec);
+						}
+						else if (vec.y == this.gameEntity.getPaddle1().y)
+						{
+							System.out.println("UGUALE__");
+						} 
+						else
+							this.gameEntity.setPaddle1(vec);						
+					}
+					
+					vec = updatedGame.getPaddle2();
+					if (vec != null)
+					{						
+						if (vec.y > this.gameEntity.getPaddle2().y)
+						{
+							System.out.println("[DOWN] -> y nuova : " + vec.y + "y vecchia : " + gameEntity.getPaddle2().y);
+							//Debug
+							//this.gameEntity.setPaddle2(vec);
+						}
+						else if (vec.y == this.gameEntity.getPaddle2().y)
+						{
+							System.out.println("UGUALE__");
+						}
+						else
+							this.gameEntity.setPaddle2(vec);
+					}
+					break;
+				
+				case GOING_UP:
+					updatedGame = data.getGameEntity();
+					vec = updatedGame.getPaddle1();
+					
+					if (vec != null)
+					{
+						if (vec.y < this.gameEntity.getPaddle1().y)
+						{
+							System.out.println("[UP] -> y nuova : " + vec.y + "y vecchia : " + gameEntity.getPaddle1().y);
+						}
+						else if (vec.y == this.gameEntity.getPaddle1().y)
+						{
+							System.out.println("UGUALE__");
+						}
+						else
+							this.gameEntity.setPaddle1(vec);						
+					}
+					
+					vec = updatedGame.getPaddle2();
+					if (vec != null)
+					{
+						if (vec.y < this.gameEntity.getPaddle2().y)
+						{
+							System.out.println("[UP] -> y nuova : " + vec.y + "y vecchia : " + gameEntity.getPaddle2().y);
+						}
+						else if (vec.y == this.gameEntity.getPaddle2().y)
+						{
+							System.out.println("UGUALE__");
+						}
+						else	
+							this.gameEntity.setPaddle2(vec);						
+					}
 					break;
 				
 				default:
@@ -115,7 +190,7 @@ public class PongServer
 		{
 			clients.add(new NetworkNode(address, port));
 			
-			socket = NetworkHelper.getSocket();
+			DatagramSocket socket = NetworkHelper.getSocket();
 			Data data = new Data(Task.CONNECTED);
 			
 			if (clients.size() == 1)
@@ -133,6 +208,7 @@ public class PongServer
 				
 				gameState = GAME_STATE.STARTED;
 				
+				//TODO close the socket ? 
 			} 
 		}
 		else
