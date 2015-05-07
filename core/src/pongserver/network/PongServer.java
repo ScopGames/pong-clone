@@ -19,8 +19,9 @@ import com.badlogic.gdx.math.Vector2;
 public class PongServer 
 {
 	private ArrayList<NetworkNode> clients;
-	private DatagramSocket socketReceive, socketSend;
+	private DatagramSocket socket;
 	private GameEntity gameEntity;
+	private DatagramPacket packet;
 	
 	public final static int DEFAULT_PORT = 9876;
 	public enum GAME_STATE {PLAYERS_CONNECTING, STARTED};
@@ -29,21 +30,19 @@ public class PongServer
 	public PongServer() throws SocketException
 	{
 		clients = new ArrayList<NetworkNode>();
-		socketReceive = NetworkHelper.getSocket(DEFAULT_PORT);
-		socketSend = NetworkHelper.getSocket();
+		socket = NetworkHelper.getSocket(DEFAULT_PORT);
 		gameState = GAME_STATE.PLAYERS_CONNECTING;
 		
 		// TODO use a random position ?
 		gameEntity = new GameEntity(new Vector2(100,100), new Vector2(0, 250),
 				new Vector2(640-20, 250)); // 640 is the screen width
 		
-		System.out.println("PongServer listeningn on: " + socketReceive.getLocalPort());
-		System.out.println("PongServer sending from: " + socketSend.getLocalPort());
+		System.out.println("PongServer listening/sending on/from: " + socket.getLocalPort());
 	}
 		
 	public void stop()
 	{
-		socketReceive.close();
+		socket.close();
 	}
 	
 	/**
@@ -54,7 +53,7 @@ public class PongServer
 	 */
 	public void listen()
 	{		
-		DatagramPacket packet = NetworkHelper.receive(socketReceive); // blocking
+		packet = NetworkHelper.receive(socket); // blocking
 				
 		byte buffer[] = packet.getData();
 				
@@ -70,24 +69,20 @@ public class PongServer
 					break;
 				
 				case UPDATE_GAME_ENTITIES:
-					//System.out.println("updating game entities");
-
 					GameEntity updatedGame = data.getGameEntity();
 					
 					Vector2 vec = updatedGame.getPaddle1();
 					if (vec != null)
 					{
-						System.out.println("updating paddle1" + "x: " + vec.x + " y: " + vec.y);
 						this.gameEntity.setPaddle1(vec);						
 					}
 					
 					vec = updatedGame.getPaddle2();
 					if (vec != null)
 					{
-						System.out.println("updating paddle2" + "x: " + vec.x + " y: " + vec.y);
 						this.gameEntity.setPaddle2(vec);						
 					}
-					
+					sendDataToPlayers();
 					break;
 				
 				default:
@@ -110,7 +105,7 @@ public class PongServer
 		
 		for (NetworkNode player : clients) 
 		{
-			NetworkHelper.send(socketSend, player, d);
+			NetworkHelper.send(socket, player, d);
 		}	
 	}
 	
@@ -120,7 +115,7 @@ public class PongServer
 		{
 			clients.add(new NetworkNode(address, port));
 			
-			DatagramSocket socket = NetworkHelper.getSocket();
+			socket = NetworkHelper.getSocket();
 			Data data = new Data(Task.CONNECTED);
 			
 			if (clients.size() == 1)
@@ -138,7 +133,6 @@ public class PongServer
 				
 				gameState = GAME_STATE.STARTED;
 				
-				//TODO close the socket ? 
 			} 
 		}
 		else
