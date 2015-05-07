@@ -43,19 +43,19 @@ public class RemotePlayerInput extends PlayerInput {
 					paddle.getY() - delta*paddle.getMovement()));
 		}
 		
-		Data data = new Data(Task.UPDATE_GAME_ENTITIES, gameEntity);
+		Data data = new Data(Task.GOING_DOWN, gameEntity);
 				
 		NetworkHelper.send(socket, server, data);
 	}
 
 	@Override
 	void onUpKeyPressed(float delta) 
-	{
+	{		
 		GameEntity gameEntity = new GameEntity();
 		if (isPaddleLeft)
 		{
 			gameEntity.setPaddle1(new Vector2(paddle.getX(), 
-					paddle.getY() + delta*paddle.getMovement()));			
+					paddle.getY() + delta*paddle.getMovement()));
 		}
 		else
 		{
@@ -63,7 +63,7 @@ public class RemotePlayerInput extends PlayerInput {
 					paddle.getY() + delta*paddle.getMovement()));
 		}
 		
-		Data data = new Data(Task.UPDATE_GAME_ENTITIES, gameEntity);
+		Data data = new Data(Task.GOING_UP, gameEntity);
 				
 		NetworkHelper.send(socket, server, data);
 	}

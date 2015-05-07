@@ -63,6 +63,9 @@ public class PongServer
 			Data data;
 			data = (Data) NetworkHelper.deserialize(buffer);
 			
+			GameEntity updatedGame;
+			Vector2 vec;
+			
 			switch (data.getTask())
 			{
 				case REGISTER_PLAYER:
@@ -70,11 +73,11 @@ public class PongServer
 					break;
 				
 				case UPDATE_GAME_ENTITIES:
-					//System.out.println("updating game entities");
+					System.out.println("NONONONONO");
 
-					GameEntity updatedGame = data.getGameEntity();
+					updatedGame = data.getGameEntity();
+					vec = updatedGame.getPaddle1();
 					
-					Vector2 vec = updatedGame.getPaddle1();
 					if (vec != null)
 					{
 						System.out.println("updating paddle1" + "x: " + vec.x + " y: " + vec.y);
@@ -90,6 +93,80 @@ public class PongServer
 					
 					//sendDataToPlayers();
 					
+					break;
+					
+				case GOING_DOWN:
+					updatedGame = data.getGameEntity();
+					vec = updatedGame.getPaddle1();
+					
+					if (vec != null)
+					{
+						//System.out.println("updating paddle1" + "x: " + vec.x + " y: " + vec.y);
+						
+						if (vec.y > gameEntity.getPaddle1().y)
+						{
+							System.out.println("[DOWN] -> y nuova : " + vec.y + "y vecchia : " + gameEntity.getPaddle1().y);
+							this.gameEntity.setPaddle2(vec);
+						}
+						else if (vec.y == this.gameEntity.getPaddle1().y)
+						{
+							System.out.println("UGUALE__");
+						} 
+						else
+							this.gameEntity.setPaddle1(vec);						
+					}
+					
+					vec = updatedGame.getPaddle2();
+					if (vec != null)
+					{
+						//System.out.println("updating paddle2" + "x: " + vec.x + " y: " + vec.y);
+						
+						if (vec.y > this.gameEntity.getPaddle2().y)
+						{
+							System.out.println("[DOWN] -> y nuova : " + vec.y + "y vecchia : " + gameEntity.getPaddle2().y);
+							this.gameEntity.setPaddle2(vec);
+						}
+						else if (vec.y == this.gameEntity.getPaddle2().y)
+						{
+							System.out.println("UGUALE__");
+						}
+						else
+							this.gameEntity.setPaddle2(vec);
+					}
+					break;
+				
+				case GOING_UP:
+					updatedGame = data.getGameEntity();
+					vec = updatedGame.getPaddle1();
+					
+					if (vec != null)
+					{
+						if (vec.y < this.gameEntity.getPaddle1().y)
+						{
+							System.out.println("[UP] -> y nuova : " + vec.y + "y vecchia : " + gameEntity.getPaddle1().y);
+						}
+						else if (vec.y == this.gameEntity.getPaddle1().y)
+						{
+							System.out.println("UGUALE__");
+						}
+						else
+							this.gameEntity.setPaddle1(vec);						
+					}
+					
+					vec = updatedGame.getPaddle2();
+					if (vec != null)
+					{
+						if (vec.y < this.gameEntity.getPaddle2().y)
+						{
+							System.out.println("[UP] -> y nuova : " + vec.y + "y vecchia : " + gameEntity.getPaddle2().y);
+						}
+						else if (vec.y == this.gameEntity.getPaddle2().y)
+						{
+							System.out.println("UGUALE__");
+						}
+						else	
+							this.gameEntity.setPaddle2(vec);						
+					}
 					break;
 				
 				default:
