@@ -1,50 +1,66 @@
 package ponggame.entity;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class Paddle extends Sprite
+public class Paddle
 {
-	private int width = 20;
-	private int height = 100;
-	private float movement = 250;
+	protected int width = 20;
+	protected int height = 100;
+	protected Vector2 position;
+	private Rectangle boundingRec;
+	
+	private float movement = 250; // TODO refactor "movement" to "speed"
 	
 	/**
 	 * 
 	 */
-	public Paddle(Color color, Vector2 position) 
+	public Paddle(Vector2 position) 
 	{	
-		super(new Sprite());
-		
-		Pixmap pixmap = new Pixmap(width, height, Format.RGBA8888);
-		pixmap.setColor(color);
-		pixmap.fillRectangle(0, 0, width, height);
-		
-		set(new Sprite(new Texture(pixmap)));
-		setPosition(position.x, position.y);
+		this.position = position;
+		boundingRec = new Rectangle(position.x, position.y, width, height);
 	}
 	
 	public void moveUp(float delta) 
 	{
-		setPosition(getX(), getY() + delta*movement);		
+		position.y += delta*movement;
+		boundingRec = new Rectangle(position.x, position.y, width, height);
 	}
 
 	public void moveDown(float delta) 
 	{
-		setPosition(getX(), getY() - delta*movement);
-	}
-	
-	public Vector2 getUpdatedPosition(float delta)
-	{
-		return new Vector2(getX(), getY() + delta*movement);
+		position.y -= delta*movement;
+		boundingRec = new Rectangle(position.x, position.y, width, height);
 	}
 	
 	public float getMovement()
 	{
 		return movement;
 	}
+	
+	public Rectangle getBoundingRec()
+	{
+		return boundingRec;
+	}
+	
+	public Vector2 getPosition() 
+	{
+		return position;
+	}
+	
+	public float getWidth()
+	{
+		return width;
+	}
+	
+	public float getHeight()
+	{
+		return height;
+	}
+	
+	/*public Vector2 getUpdatedPosition(float delta)
+	{
+		return new Vector2(getX(), getY() + delta*movement);
+	}*/
+	
 }

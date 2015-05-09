@@ -1,9 +1,9 @@
 package ponggame.screen;
 
-import ponggame.entity.Ball;
-import ponggame.entity.Paddle;
 import ponggame.input.LocalPlayerInput;
 import ponggame.input.PlayerInput;
+import ponggame.renderentities.RenderableBall;
+import ponggame.renderentities.RenderablePaddle;
 import ponggame.ui.Score;
 import ponggame.ui.Score.players;
 
@@ -18,8 +18,8 @@ import com.badlogic.gdx.math.Vector2;
 public class PongGame implements Screen
 {
 	private SpriteBatch batch;
-	private Paddle paddleLeft, paddleRight;
-	private Ball ball;
+	private RenderablePaddle paddleLeft, paddleRight;
+	private RenderableBall ball;
 	private Score score;
 	private PlayerInput input1, input2;
 	
@@ -76,7 +76,7 @@ public class PongGame implements Screen
 	{
 		boolean lost = false;
 		
-		float x = ball.getX();
+		float x = ball.getPosition().x;
 		
 		if (x + ball.getWidth() < 0 || x > Gdx.graphics.getWidth()) 
 			lost = true;
@@ -104,22 +104,6 @@ public class PongGame implements Screen
 		ball.draw(batch);		
 	}
 	
-	@Override
-	public void resize(int width, int height) {		
-	}
-	
-	@Override
-	public void pause() {
-	}
-
-	@Override
-	public void resume() {
-	}
-
-	@Override
-	public void dispose() {
-	}
-	
 	private void initializeBall() 
 	{
 		float speed = 300;
@@ -129,18 +113,37 @@ public class PongGame implements Screen
 				MathUtils.random(50, Gdx.graphics.getHeight()-50));
 		Vector2 velocity = new Vector2(speed, speed*MathUtils.randomSign());
 		
-		ball = new Ball(position, velocity);
+		ball = new RenderableBall(position, velocity);
 	}
 	
 	private void initializePaddles()
 	{
 		// Left paddle
-		paddleLeft = new Paddle(new Color(1,0,0,1), new Vector2(0,200));
+		paddleLeft = new RenderablePaddle(new Vector2(0,200), new Color(1,0,0,1));
 		
 		// Right paddle
-		paddleRight = new Paddle(new Color(0,1,0,1), new Vector2(Gdx.app.getGraphics().getWidth()-20,200));
+		paddleRight = new RenderablePaddle(new Vector2(Gdx.app.getGraphics().getWidth()-20,200), new Color(0,1,0,1));
 	}
 
+	@Override
+	public void resize(int width, int height) {		
+	}
+	
+	@Override
+	public void pause() {
+	}
+	
+	@Override
+	public void resume() {
+	}
+	
+	@Override
+	public void dispose() 
+	{
+		// dispose graphics elements
+		
+	}
+	
 	@Override
 	public void hide() {		
 	}
