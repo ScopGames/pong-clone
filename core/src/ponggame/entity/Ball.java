@@ -70,6 +70,13 @@ public class Ball
 		return velocity;
 	}
 	
+	
+	
+	public void setPosition(float x, float y) {
+		this.position.x = x;
+		this.position.y = y;
+	}
+
 	public Vector2 getPosition() 
 	{
 		return position;
