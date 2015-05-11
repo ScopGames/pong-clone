@@ -40,9 +40,11 @@ public class Ball
 			velocity.x = -velocity.x;
 			
 			// if overlapped behind the paddle
+			// TODO check if the collision happens in the upper or lower side of 
+			// the paddle.
 			if (position.x + margin < paddleL.getPosition().x + paddleL.getWidth() ||
-				position.x - margin + width > paddleR.getPosition().y)
-			{
+				position.x + width - margin > paddleR.getPosition().x)
+			{				
 				velocity.y = -velocity.y;	
 			}
 		}
