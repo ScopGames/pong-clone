@@ -96,7 +96,6 @@ public class Ball
 	{
 		boolean collision = false;
 		
-		// TODO check if this cause memory problems/leaks
 		Rectangle ballBoundingRec = new Rectangle(position.x, position.y, width, height);
 		
 		collision = paddle.getBoundingRec().overlaps(ballBoundingRec);
@@ -117,7 +116,7 @@ public class Ball
 	private boolean collisionTop()
 	{
 		boolean collision = false;
-		float screenHeight = Gdx.graphics.getHeight();
+		float screenHeight = 480;
 		
 		if (position.y + height >= screenHeight)
 			collision = true;
