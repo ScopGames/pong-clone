@@ -52,7 +52,6 @@ public class RemotePlayerInput extends PlayerInput {
 		NetworkHelper.send(socket, server, data);
 		
 		tmpPosition = new Vector2(paddle.getPosition().x, newY);
-		//paddle.setPosition(paddle.getPosition().x, newY);;
 	}
 
 	@Override
@@ -74,8 +73,7 @@ public class RemotePlayerInput extends PlayerInput {
 		setLastTask(Task.GOING_UP);
 		NetworkHelper.send(socket, server, data);
 		
-		tmpPosition = new Vector2(paddle.getPosition().x, newY);		
-		//paddle.setPosition(paddle.getPosition().x, newY);
+		tmpPosition = new Vector2(paddle.getPosition().x, newY);
 	}
 
 	public Task getLastTask() {
