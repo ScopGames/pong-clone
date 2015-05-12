@@ -9,9 +9,6 @@ public class Paddle
 	protected int height = 100;
 	protected Vector2 position;
 	
-
-	private Rectangle boundingRec;
-	
 	private float movement = 250; // TODO refactor "movement" to "speed"
 	
 	/**
@@ -20,19 +17,16 @@ public class Paddle
 	public Paddle(Vector2 position) 
 	{	
 		this.position = position;
-		boundingRec = new Rectangle(position.x, position.y, width, height);
 	}
 	
 	public void moveUp(float delta) 
 	{
 		position.y += delta*movement;
-		boundingRec = new Rectangle(position.x, position.y, width, height);
 	}
 
 	public void moveDown(float delta) 
 	{
 		position.y -= delta*movement;
-		boundingRec = new Rectangle(position.x, position.y, width, height);
 	}
 	
 	public float getMovement()
@@ -41,8 +35,8 @@ public class Paddle
 	}
 	
 	public Rectangle getBoundingRec()
-	{
-		return boundingRec;
+	{		
+		return new Rectangle(position.x, position.y, width, height);
 	}
 	
 	public void setPosition(float x, float y) {
@@ -69,5 +63,4 @@ public class Paddle
 	{
 		return new Vector2(getX(), getY() + delta*movement);
 	}*/
-	
 }
