@@ -1,43 +1,38 @@
 package ponggame.entity;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class Ball extends Sprite
+public class Ball
 {
-	private int width = 20;
-	private int height = 20;
-	private Vector2 velocity;
+	protected int width = 20;
+	protected int height = 20;
+	protected Vector2 position;
+	protected Vector2 velocity;
 	
 	private boolean overlapped = false;
 	//private rotationSpeed = 0;
 	
 	public Ball()
 	{			
-		Pixmap pixmap = new Pixmap(width, height, Format.RGBA8888);
-		pixmap.setColor(1,0,0,1);
-		pixmap.fillCircle(width/2, height/2, width/2 - 1);
-		this.set(new Sprite(new Texture(pixmap)));
+		this.position = new Vector2(0, 0);	
+		this.velocity = new Vector2(0, 0);
 	}
 	
 	public Ball(Vector2 position, Vector2 velocity)
-	{			
-		this();
-		
-		setPosition(position.x, position.y);
+	{					
+		// deep copies
+		this.position = position;	
 		this.velocity = velocity;
 	}
 	
 	public void update(float delta, Paddle paddleL, Paddle paddleR)
 	{	
 		float margin = 10;
-		
-		if (!overlapped && (collisionPaddle(paddleL) || collisionPaddle(paddleR)))
+				
+		if (!overlapped && (collisionPaddle(paddleL) || 
+				collisionPaddle(paddleR)))
 		{
 			overlapped = true;
 			
@@ -45,9 +40,11 @@ public class Ball extends Sprite
 			velocity.x = -velocity.x;
 			
 			// if overlapped behind the paddle
-			if (getX() + margin < paddleL.getX() + paddleL.getWidth() ||
-				getX() - margin + width > paddleR.getX())
-			{
+			// TODO check if the collision happens in the upper or lower side of 
+			// the paddle.
+			if (position.x + margin < paddleL.getPosition().x + paddleL.getWidth() ||
+				position.x + width - margin > paddleR.getPosition().x)
+			{				
 				velocity.y = -velocity.y;	
 			}
 		}
@@ -64,22 +61,44 @@ public class Ball extends Sprite
 			// invert the direction on the y axis
 			velocity.y = -velocity.y;
 		}
-				
-		setPosition(getX() + velocity.x*delta, getY() + velocity.y*delta);
+		
+		position.set(position.x + velocity.x*delta, position.y + velocity.y*delta);
 	}
 		
 	public Vector2 getVelocity() 
 	{
 		return velocity;
 	}
+	
+	
+	
+	public void setPosition(float x, float y) {
+		this.position.x = x;
+		this.position.y = y;
+	}
 
+	public Vector2 getPosition() 
+	{
+		return position;
+	}
+	
+	public float getWidth()
+	{
+		return width;
+	}
+	
+	public float getHeight()
+	{
+		return height;
+	}
+	
 	private boolean collisionPaddle(Paddle paddle) 
 	{
 		boolean collision = false;
 		
-		Rectangle paddleCollision = paddle.getBoundingRectangle();
+		Rectangle ballBoundingRec = new Rectangle(position.x, position.y, width, height);
 		
-		collision = paddleCollision.overlaps(this.getBoundingRectangle());
+		collision = paddle.getBoundingRec().overlaps(ballBoundingRec);
 		
 		return collision;
 	}
@@ -88,7 +107,7 @@ public class Ball extends Sprite
 	{
 		boolean collision = false;
 	
-		if (getY()<= 0)
+		if (position.y <= 0)
 			collision = true;
 	
 		return collision;
@@ -97,9 +116,9 @@ public class Ball extends Sprite
 	private boolean collisionTop()
 	{
 		boolean collision = false;
-		float screenHeight = Gdx.graphics.getHeight();
+		float screenHeight = 480;
 		
-		if (getY() + height >= screenHeight)
+		if (position.y + height >= screenHeight)
 			collision = true;
 		
 		return collision;

@@ -21,7 +21,7 @@ public abstract class PlayerInput
 	public void handleInput(float delta)
 	{
 		float height = paddle.getHeight();
-		float paddleY = paddle.getY();
+		float paddleY = paddle.getPosition().y;
 		
 		if (layout == layoutInput.WASD)
 		{

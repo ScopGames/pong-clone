@@ -5,9 +5,10 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 import ponggame.entity.Ball;
-import ponggame.entity.Paddle;
 import ponggame.input.PlayerInput;
 import ponggame.input.RemotePlayerInput;
+import ponggame.renderentities.RenderableBall;
+import ponggame.renderentities.RenderablePaddle;
 import ponggame.ui.Score;
 import ponggame.ui.Score.players;
 import pongserver.utility.Data;
@@ -30,8 +31,8 @@ public class MultiplayerPong implements Screen {
 	
 	private DatagramPacket packet;
 	private SpriteBatch batch;
-	private Paddle paddleLeft, paddleRight;
-	private Ball ball;
+	private RenderablePaddle paddleLeft, paddleRight;
+	private RenderableBall ball;
 	private Score score;
 	private RemotePlayerInput input;
 	private FPSLogger fpsLogger;
@@ -135,17 +136,17 @@ public class MultiplayerPong implements Screen {
 	private void initializePaddles()
 	{
 		// Left paddle
-		paddleLeft = new Paddle(new Color(1,0,0,1), new Vector2());
+		paddleLeft = new RenderablePaddle(new Vector2(), new Color(1,0,0,1));
 		
 		// Right paddle
-		paddleRight = new Paddle(new Color(0,1,0,1), new Vector2());
+		paddleRight = new RenderablePaddle(new Vector2(), new Color(0,1,0,1));
 	}
 	
 	private void initializeBall() 
 	{		
 		Vector2 dummy = new Vector2();
 		
-		ball = new Ball(dummy, dummy);
+		ball = new RenderableBall(dummy, dummy);
 	}
 	
 	private void updateGameEntities(float delta) 
@@ -177,7 +178,7 @@ public class MultiplayerPong implements Screen {
 	{
 		boolean lost = false;
 		
-		float x = ball.getX();
+		float x = ball.getPosition().x;
 		
 		if (x + ball.getWidth() < 0 || x > Gdx.graphics.getWidth()) 
 			lost = true;
