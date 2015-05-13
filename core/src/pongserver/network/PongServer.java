@@ -7,7 +7,9 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 
+import ponggame.entity.Ball;
 import ponggame.entity.GameEntity;
+import ponggame.entity.Paddle;
 import pongserver.utility.Data;
 import pongserver.utility.NetworkHelper;
 import pongserver.utility.NetworkHelper.Task;
@@ -26,6 +28,8 @@ public class PongServer
 	private DatagramSocket socket;
 	private GameEntity gameEntity;
 	private GameEntity updatedGame;
+	private Ball ball;
+	private Paddle paddleLeft, paddleRight;
 	private DatagramPacket packet;
 	
 	public final static int DEFAULT_PORT = 9876;
@@ -41,8 +45,13 @@ public class PongServer
 		gameState = GAME_STATE.PLAYERS_CONNECTING;
 		
 		// TODO use a random position ?
-		gameEntity = new GameEntity(new Vector2(100,100), new Vector2(0, 250),
-				new Vector2(640-20, 250)); // 640 is the screen width
+		// TODO get velocity from a configuration file look at #issue12
+		ball = new Ball(new Vector2(300, 400), new Vector2(60, 25)); 
+		paddleLeft = new Paddle(new Vector2(0, 250));
+		paddleRight = new Paddle(new Vector2(640-20, 250)); // 640 is the screen width
+		
+		gameEntity = new GameEntity(ball.getPosition(), paddleLeft.getPosition(),
+				paddleRight.getPosition()); 
 		
 		System.out.println("PongServer listening/sending on/from: " + socket.getLocalPort());
 	}
@@ -126,6 +135,13 @@ public class PongServer
 		}	
 	}
 	
+	public void updateBall(float delta)
+	{	
+		ball.update(delta, paddleLeft, paddleRight);
+		
+		gameEntity.setBall(ball.getPosition());
+	}
+	
 	private void register(InetAddress address, int port)
 	{
 		if(clients.size() < 2)
@@ -193,9 +209,15 @@ public class PongServer
 		else
 		{			
 			if (player == PLAYER.LEFT)
+			{
 				gameEntity.setPaddle1(vec);
+				paddleLeft.setPosition(vec.x, vec.y);
+			}
 			else if (player == PLAYER.RIGHT)
+			{
 				gameEntity.setPaddle2(vec);
+				paddleRight.setPosition(vec.x, vec.y);				
+			}
 		}
 	}
 	
@@ -227,9 +249,16 @@ public class PongServer
 		else
 		{			
 			if (player == PLAYER.LEFT)
+			{
 				gameEntity.setPaddle1(vec);
+				paddleLeft.setPosition(vec.x, vec.y);
+								
+			}
 			else if (player == PLAYER.RIGHT)
+			{
 				gameEntity.setPaddle2(vec);
+				paddleRight.setPosition(vec.x, vec.y);
+			}
 		}
 	}
 	

@@ -17,7 +17,7 @@ public class PongServerLauncher
 	 *     1/60 = 16.6 ~= 17
 	 *     
 	 */
-	static long responseDelay = 17; // millis
+	static long responseDelay = 20; // millis
 	
 	public static void main(String[] args) 
 	{
@@ -58,6 +58,7 @@ public class PongServerLauncher
 				{
 					if(server.gameState == PongServer.GAME_STATE.STARTED)
 					{
+						server.updateBall(1/20f);
 						server.sendDataToPlayers();
 					}
 					else
