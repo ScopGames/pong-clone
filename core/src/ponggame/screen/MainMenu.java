@@ -1,16 +1,26 @@
-package pongtest.ui;
+package ponggame.screen;
 
-import pongtest.Main;
-import pongtest.Main.Screens;
-import pongtest.utility.Tween;
-import pongtest.utility.Tween.RepeatMode;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+
+import ponggame.Main;
+import ponggame.Main.Screens;
+import ponggame.utility.Tween;
+import pongserver.network.PongServer;
+import pongserver.utility.Data;
+import pongserver.utility.NetworkHelper;
+import pongserver.utility.NetworkHelper.Task;
+import pongserver.utility.NetworkNode;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
@@ -28,20 +38,27 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.utils.Timer;
 
 public class MainMenu implements Screen, InputProcessor {
 	private Stage stage = new Stage();
 	private TextureAtlas atlas;
 	private Table mainTable, multiplayerTable;
-	private TextButton singlePlayerButton, multiplayerButton;
+	private TextButton singlePlayerButton, multiplayerButton, submitIpButton;
 	private TextField ipInput;
 	private Label ipLabel;
+	private static Label connectionStatusLabel;
 	private Skin skin;
 	private BitmapFont mainFont;
 	private Action showMultiplayerMenu, hideMultiplayerMenu;
+	private static Task threadTask;
+	private static NetworkNode server;
+	DatagramSocket socket = NetworkHelper.getSocket();
 	
 	@Override
-	public void show() {
+	public void show() 
+	{
 		Gdx.input.setInputProcessor(stage);
 		
 		// initialize table field
@@ -53,7 +70,8 @@ public class MainMenu implements Screen, InputProcessor {
 	}
 
 	@Override
-	public void render(float delta) {
+	public void render(float delta) 
+	{
 		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
@@ -65,20 +83,20 @@ public class MainMenu implements Screen, InputProcessor {
 	{
 		atlas = new TextureAtlas(Gdx.files.internal("ui/img/buttons.pack"));
 		skin = new Skin(atlas);
+		
 		mainFont = new BitmapFont(Gdx.files.internal("ui/font/kongfont.fnt"));
 		mainFont.setScale(0.38f); // maybe we should reduce 
-								 // the export font size ?
+								  // the export font size ?
 		
 		TextButtonStyle textButtonStyle = new TextButtonStyle();
 		textButtonStyle.up = skin.getDrawable("button");
 		textButtonStyle.down = skin.getDrawable("button_afa");
 		textButtonStyle.font = mainFont;
 		
-		singlePlayerButton = new TextButton("Single Player", textButtonStyle);		
+		singlePlayerButton = new TextButton("Single Player", textButtonStyle);
 		singlePlayerButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				// TODO Auto-generated method stub
 				super.clicked(event, x, y);
 				Main.changeScreen(Screens.PONGGAME);
 			}
@@ -86,13 +104,16 @@ public class MainMenu implements Screen, InputProcessor {
 		
 		multiplayerButton = new TextButton("Multiplayer", textButtonStyle);
 		
-		TextFieldStyle style = new TextFieldStyle();
-		style.font = mainFont;
-		style.fontColor = new Color(1, 1, 0, 1);
-		style.background = skin.getDrawable("button");
-		//style.cursor.setMinWidth(2f);
+		TextFieldStyle textFieldStyle = new TextFieldStyle();
+		textFieldStyle.font = mainFont;
+		textFieldStyle.fontColor = new Color(1, 1, 0, 1);
+		textFieldStyle.background = skin.getDrawable("button");
+		textFieldStyle.cursor = new SpriteDrawable(new Sprite(new Texture(Gdx.files.internal("ui/cursor.png"))));
 		
-		ipInput = new TextField("",style);
+		LabelStyle labelStyle = new LabelStyle(mainFont, Color.WHITE);
+		ipLabel = new Label("IP del server:", labelStyle);
+
+		ipInput = new TextField("127.0.0.1", textFieldStyle);
 		ipInput.setTextFieldFilter(new TextFieldFilter() {
 			@Override
 			public boolean acceptChar(TextField textField, char c) {
@@ -110,9 +131,21 @@ public class MainMenu implements Screen, InputProcessor {
 			}
 		});
 		
-		LabelStyle labelStyle = new LabelStyle(mainFont, Color.WHITE);
-		ipLabel = new Label("IP del server:", labelStyle);
+		submitIpButton = new TextButton("Submit", textButtonStyle);		
+		submitIpButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				super.clicked(event, x, y);
+				String ipAddress = ipInput.getText();
 				
+				server = new NetworkNode(ipAddress, PongServer.DEFAULT_PORT);
+				
+				connectToServer(server);
+			}
+		});
+		
+		connectionStatusLabel = new Label("", labelStyle);
+		
 		multiplayerButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -147,19 +180,48 @@ public class MainMenu implements Screen, InputProcessor {
 		multiplayerTable.add(ipLabel);
 		multiplayerTable.row();
 		multiplayerTable.add(ipInput);
+		multiplayerTable.row();
+		multiplayerTable.add(submitIpButton);
+		multiplayerTable.row();
+		multiplayerTable.add(connectionStatusLabel);
 		multiplayerTable.moveBy(mainTable.getWidth()/2, 0);
 		//multiplayerTable.debug();
 		multiplayerTable.setVisible(false);
+		
+		stage.addAction(new Action() 
+		{
+			@Override
+			public boolean act(float delta) 
+			{
+				boolean done = false;
+				
+				if (threadTask == Task.INIT_GAME_LEFT)
+				{
+					done = true;
+					Main.startMultiplayerPong(socket, server, true);
+				}
+				else if(threadTask == Task.INIT_GAME_RIGHT)
+				{
+					done = true;
+					Main.startMultiplayerPong(socket, server, false);
+				}
+				
+				return done;
+			}
+		});
 	}
 	
-	private void initializeActions() {
+	private void initializeActions() 
+	{
 		final Tween menuTweenShow = new Tween(Interpolation.exp5Out, 0, -150, 1.0f);
 		//menuTweenShow.setRepeatMode(RepeatMode.REPEAT_PINGPONG);
 		final Tween menuTweenHide = new Tween(Interpolation.exp5Out, -150, 0, 1.0f);
 		
-		showMultiplayerMenu = new Action() {
+		showMultiplayerMenu = new Action() 
+		{
 			@Override
-			public boolean act(float delta) {
+			public boolean act(float delta) 
+			{
 				boolean done = false;
 				menuTweenShow.update(delta);
 				
@@ -180,9 +242,11 @@ public class MainMenu implements Screen, InputProcessor {
 			}
 		};
 		
-		hideMultiplayerMenu = new Action() {
+		hideMultiplayerMenu = new Action() 
+		{
 			@Override
-			public boolean act(float delta) {
+			public boolean act(float delta) 
+			{
 				boolean done = false;
 					
 				menuTweenHide.update(delta);
@@ -204,28 +268,61 @@ public class MainMenu implements Screen, InputProcessor {
 		};
 	}
 	
-	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
+	/**
+	 * 
+	 * @param network info about the server 
+	 */
+	private void connectToServer(NetworkNode p)
+	{
+		Data data = new Data(Task.REGISTER_PLAYER);
+		NetworkHelper.send(socket, p, data);
+		System.out.println("MainMenu : Packet sent");
+		connectionStatusLabel.setText("Packet sent");
 		
+		final Thread t = new Thread(new ReceivingHandler(socket, connectionStatusLabel));
+		t.start();
+
+		Timer timer = new Timer();			
+		float timeout = 5; // seconds
+			
+		// TODO check if this works
+		timer.scheduleTask(new Timer.Task() 
+		{
+			@Override
+			public void run() 
+			{				
+				// If the server doesn't respond in 5 seconds, and the thread is
+				//alive, then interrupt the thread.
+				if(threadTask != Task.CONNECTED && t.isAlive())
+				{ 
+					t.interrupt();
+					connectionStatusLabel.setText("No repsonse...");
+					System.out.println("Thread stopped");
+				}				
+				//else means that: 
+				// - one player is connected and he is waiting for the other one
+				// to connect, doesn't interrupt the thread. 
+				// or
+				// -  both players are connected, the thread is finished.
+			}
+		}, timeout);
+	}
+	
+	@Override
+	public void resize(int width, int height) {		
 	}
 
 	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-		
+	public void pause() {		
 	}
 
 	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
+	public void resume() {		
 	}
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
-		
+		dispose();
 	}
 
 	@Override
@@ -234,53 +331,88 @@ public class MainMenu implements Screen, InputProcessor {
 		mainFont.dispose();
 		atlas.dispose();
 		skin.dispose();
+		System.out.println("MainMenu disposed.");
 	}
 
 	@Override
 	public boolean keyDown(int keycode) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean keyUp(int keycode) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		
 		return false;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		
 		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
 		return false;
 	}	
+	
+	
+	public static class ReceivingHandler implements Runnable {
+		
+		public DatagramSocket tsocket;
+		public Label tconnection;
+		
+		public ReceivingHandler(DatagramSocket socket, Label connection)
+		{
+			tsocket = socket;
+			tconnection = connection;
+		}
+		
+		public void run()
+		{
+			System.out.println("Thread: Waiting for server response");
+			tconnection.setText("Connecting...");
+			DatagramPacket packet;
+			Data data;
+			
+			try 
+			{
+				do
+				{
+					packet = NetworkHelper.receive(this.tsocket);
+					data = (Data)NetworkHelper.deserialize(packet.getData());
+					System.out.println("Receveid packet. Task = " + data.getTask());
+					tconnection.setText("Task = " + data.getTask());
+					threadTask = data.getTask();
+				}
+				while (threadTask != Task.INIT_GAME_LEFT && threadTask != Task.INIT_GAME_RIGHT);
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+			catch (ClassNotFoundException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+	}
 }

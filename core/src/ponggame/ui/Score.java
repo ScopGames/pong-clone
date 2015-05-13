@@ -1,4 +1,4 @@
-package pongtest.ui;
+package ponggame.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;

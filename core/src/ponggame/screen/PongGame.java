@@ -1,10 +1,11 @@
-package pongtest;
+package ponggame.screen;
 
-import pongtest.entity.Ball;
-import pongtest.entity.Paddle;
-import pongtest.input.PlayerInput;
-import pongtest.ui.Score;
-import pongtest.ui.Score.players;
+import ponggame.input.LocalPlayerInput;
+import ponggame.input.PlayerInput;
+import ponggame.renderentities.RenderableBall;
+import ponggame.renderentities.RenderablePaddle;
+import ponggame.ui.Score;
+import ponggame.ui.Score.players;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -17,8 +18,8 @@ import com.badlogic.gdx.math.Vector2;
 public class PongGame implements Screen
 {
 	private SpriteBatch batch;
-	private Paddle paddleLeft, paddleRight;
-	private Ball ball;
+	private RenderablePaddle paddleLeft, paddleRight;
+	private RenderableBall ball;
 	private Score score;
 	private PlayerInput input1, input2;
 	
@@ -32,8 +33,8 @@ public class PongGame implements Screen
 		score = new Score();
 		
 		initializePaddles();
-		input1 = new PlayerInput(paddleLeft, PlayerInput.layoutInput.WASD);
-		input2 = new PlayerInput(paddleRight, PlayerInput.layoutInput.ARROWS);
+		input1 = new LocalPlayerInput(paddleLeft, PlayerInput.layoutInput.WASD);
+		input2 = new LocalPlayerInput(paddleRight, PlayerInput.layoutInput.ARROWS);
 		initializeBall();
 	}
 
@@ -75,7 +76,7 @@ public class PongGame implements Screen
 	{
 		boolean lost = false;
 		
-		float x = ball.getX();
+		float x = ball.getPosition().x;
 		
 		if (x + ball.getWidth() < 0 || x > Gdx.graphics.getWidth()) 
 			lost = true;
@@ -103,6 +104,27 @@ public class PongGame implements Screen
 		ball.draw(batch);		
 	}
 	
+	private void initializeBall() 
+	{
+		float speed = 300;
+		
+		float paddleWidth = paddleLeft.getWidth();
+		Vector2 position = new Vector2(paddleWidth + MathUtils.random(200), 
+				MathUtils.random(50, Gdx.graphics.getHeight()-50));
+		Vector2 velocity = new Vector2(speed, speed*MathUtils.randomSign());
+		
+		ball = new RenderableBall(position, velocity);
+	}
+	
+	private void initializePaddles()
+	{
+		// Left paddle
+		paddleLeft = new RenderablePaddle(new Vector2(0,200), new Color(1,0,0,1));
+		
+		// Right paddle
+		paddleRight = new RenderablePaddle(new Vector2(Gdx.app.getGraphics().getWidth()-20,200), new Color(0,1,0,1));
+	}
+
 	@Override
 	public void resize(int width, int height) {		
 	}
@@ -110,35 +132,18 @@ public class PongGame implements Screen
 	@Override
 	public void pause() {
 	}
-
+	
 	@Override
 	public void resume() {
 	}
-
+	
 	@Override
-	public void dispose() {
+	public void dispose() 
+	{
+		// dispose graphics elements
+		
 	}
 	
-	private void initializeBall() 
-	{
-		float speed = 300;
-		
-		float paddleWidth = paddleLeft.getWidth();
-		Vector2 position = new Vector2(paddleWidth + MathUtils.random(200), MathUtils.random(Gdx.graphics.getHeight()-50));
-		Vector2 velocity = new Vector2(speed, speed*MathUtils.randomSign());
-		
-		ball = new Ball(position, velocity);
-	}
-	
-	private void initializePaddles()
-	{
-		// Left paddle
-		paddleLeft = new Paddle(new Color(1,0,0,1), new Vector2(0,200));
-		
-		// Right paddle
-		paddleRight = new Paddle(new Color(0,1,0,1), new Vector2(Gdx.app.getGraphics().getWidth()-20,200));
-	}
-
 	@Override
 	public void hide() {		
 	}
