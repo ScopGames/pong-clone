@@ -10,6 +10,7 @@ public class Data
 	private Task mTask;
 	private GameEntity mGameEntity;
 	
+	public Data(){}
 	
 	public Data(Task task)
 	{	
