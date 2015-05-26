@@ -1,14 +1,9 @@
 package ponggame.entity;
 
-import java.io.Serializable;
-
 import com.badlogic.gdx.math.Vector2;
 
-public class GameEntity implements Serializable {
-	
-	// TODO check this
-	private static final long serialVersionUID = 1L;
-	
+public class GameEntity {
+		
 	/**
 	 * Left paddle
 	 */
@@ -21,7 +16,7 @@ public class GameEntity implements Serializable {
 	
 	public GameEntity()
 	{
-		// empty constructor
+		// empty constructor needed for json serialize & deserialize
 	}
 	
 	public GameEntity(Vector2 ball, Vector2 paddle1,Vector2 paddle2)
