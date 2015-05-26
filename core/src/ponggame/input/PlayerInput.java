@@ -25,7 +25,7 @@ public abstract class PlayerInput
 		
 		if (layout == layoutInput.WASD)
 		{
-			if (Gdx.input.isKeyPressed(Keys.W) && paddleY + height < Gdx.graphics.getHeight()) 
+			if (Gdx.input.isKeyPressed(Keys.W) && paddleY + height < 480) 
 			{
 				onUpKeyPressed(delta);
 			}
@@ -36,7 +36,7 @@ public abstract class PlayerInput
 		}
 		else if (layout == layoutInput.ARROWS)
 		{
-			if (Gdx.input.isKeyPressed(Keys.UP) && paddleY + height < Gdx.graphics.getHeight()) 
+			if (Gdx.input.isKeyPressed(Keys.UP) && paddleY + height < 480) 
 			{
 				onUpKeyPressed(delta);
 			}
