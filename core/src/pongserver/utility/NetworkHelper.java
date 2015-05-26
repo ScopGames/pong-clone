@@ -29,7 +29,7 @@ public class NetworkHelper
        
 	public static DatagramPacket receive(DatagramSocket socket)
     {
-    	byte[] buffer = new byte[1024];
+    	byte[] buffer = new byte[512];
     	DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
     	
     	try 
@@ -58,7 +58,7 @@ public class NetworkHelper
 		}
     }*/
     
-    public static void send(DatagramSocket socket, NetworkNode p, Data d) 
+    /*public static void send(DatagramSocket socket, NetworkNode p, Data d) 
     {		
 		byte[] buffer;
 		
@@ -79,7 +79,7 @@ public class NetworkHelper
 			e.printStackTrace();
 		} 
     }
-    
+    */
          
 	public static byte[] serialize(Object obj) throws IOException 
 	{
@@ -137,5 +137,29 @@ public class NetworkHelper
 		}
 		
 		return sock;
+	}
+	
+	public static void send(DatagramSocket socket, NetworkNode p, Data d)
+	{
+	byte[] buffer;
+			
+	try 
+	{
+		buffer = d.getStringData().getBytes();
+		
+		System.out.print(buffer.length);
+		
+		if (buffer.length < 1024)
+		{
+			DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, p.ipaddress, p.port);
+			socket.send(sendPacket);
+			//socket.close();
+			// maybe close the socket ? 
+			}
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		} 
 	}
 }
