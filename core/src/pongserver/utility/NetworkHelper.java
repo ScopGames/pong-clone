@@ -147,7 +147,6 @@ public class NetworkHelper
 	{
 		buffer = d.getStringData().getBytes();
 		
-		System.out.print(buffer.length);
 		
 		if (buffer.length < 1024)
 		{
