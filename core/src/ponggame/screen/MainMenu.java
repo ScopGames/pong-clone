@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 
 import ponggame.Main;
 import ponggame.Main.Screens;
+import ponggame.entity.GameEntity;
 import ponggame.utility.Tween;
 import pongserver.network.PongServer;
 import pongserver.utility.Data;
@@ -39,6 +40,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Timer;
 
 public class MainMenu implements Screen, InputProcessor {
@@ -274,7 +276,7 @@ public class MainMenu implements Screen, InputProcessor {
 	 */
 	private void connectToServer(NetworkNode p)
 	{
-		Data data = new Data(Task.REGISTER_PLAYER);
+		Data data = new Data(Task.REGISTER_PLAYER, new GameEntity());
 		NetworkHelper.send(socket, p, data);
 		System.out.println("MainMenu : Packet sent");
 		connectionStatusLabel.setText("Packet sent");
@@ -391,28 +393,22 @@ public class MainMenu implements Screen, InputProcessor {
 			System.out.println("Thread: Waiting for server response");
 			tconnection.setText("Connecting...");
 			DatagramPacket packet;
-			Data data;
-			
-			try 
+						
+			do
 			{
-				do
-				{
-					packet = NetworkHelper.receive(this.tsocket);
-					data = (Data)NetworkHelper.deserialize(packet.getData());
-					System.out.println("Receveid packet. Task = " + data.getTask());
-					tconnection.setText("Task = " + data.getTask());
-					threadTask = data.getTask();
-				}
-				while (threadTask != Task.INIT_GAME_LEFT && threadTask != Task.INIT_GAME_RIGHT);
-			} 
-			catch (IOException e) 
-			{
-				e.printStackTrace();
+				packet = NetworkHelper.receive(this.tsocket);
+				byte[] buffer = packet.getData();
+				Json json = new Json();
+				String d = new String(buffer);
+				d= d.trim();
+				Data data = json.fromJson(Data.class, d);
+				System.out.println("Receveid packet. Task = " + data.getTask());
+				tconnection.setText("Task = " + data.getTask());
+				threadTask = data.getTask();
 			}
-			catch (ClassNotFoundException e) 
-			{
-				e.printStackTrace();
-			}
+			while (threadTask != Task.INIT_GAME_LEFT && threadTask != Task.INIT_GAME_RIGHT);
+			 
+		
 		}
 	}
 }

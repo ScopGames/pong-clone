@@ -16,6 +16,7 @@ import pongserver.utility.NetworkHelper.Task;
 import pongserver.utility.NetworkNode;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Json;
 
 
 public class PongServer 
@@ -71,59 +72,51 @@ public class PongServer
 	{		
 		packet = NetworkHelper.receive(socket); // blocking
 				
-		byte buffer[] = packet.getData();
+		byte[] buffer = packet.getData();
+		Json json = new Json();
+		String data = new String(buffer);
+		data= data.trim();
+		Data gameData = json.fromJson(Data.class, data);
 		
-		try 
+		
+		PLAYER player;			
+		switch (gameData.getTask())
 		{
-			PLAYER player;
-			Data data;
-			data = (Data) NetworkHelper.deserialize(buffer);			
+			case REGISTER_PLAYER:
+				register(packet.getAddress(), packet.getPort());
+				break;
+								
+			case GOING_DOWN:
+				player = getPlayerSide();
+				
+				updatedGame = gameData.getGameEntity();
+				
+				if (player != PLAYER.NOT_A_BANANA)
+				{
+					updatePaddlesDown(player, updatedGame);
+				}
+				else
+					System.out.println("siamo delle banane");
 			
-			switch (data.getTask())
+			break;
+		
+		case GOING_UP:
+			player = getPlayerSide();
+			
+			updatedGame = gameData.getGameEntity();
+			
+			if (player != PLAYER.NOT_A_BANANA)
 			{
-				case REGISTER_PLAYER:
-					register(packet.getAddress(), packet.getPort());
-					break;
-									
-				case GOING_DOWN:
-					player = getPlayerSide();
-					
-					updatedGame = data.getGameEntity();
-					
-					if (player != PLAYER.NOT_A_BANANA)
-					{
-						updatePaddlesDown(player, updatedGame);
-					}
-					else
-						System.out.println("siamo delle banane");
-					
-					break;
-				
-				case GOING_UP:
-					player = getPlayerSide();
-					
-					updatedGame = data.getGameEntity();
-					
-					if (player != PLAYER.NOT_A_BANANA)
-					{
-						updatePaddlesUp(player, updatedGame);
-					}
-									
-					break;
-				
-				default:
-					break; 
+				updatePaddlesUp(player, updatedGame);
 			}
-		} 
-		catch (ClassNotFoundException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
+							
+			break;
+		
+		default:
+			break; 
 	}
+
+}
 	
 	public void sendDataToPlayers()
 	{
