@@ -1,5 +1,7 @@
 package ponggame.ui;
 
+import ponggame.screen.PongGame;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -37,7 +39,7 @@ public class Score
 	{
 		String scoreStr = score1 + " : " + score2;
 		
-		font.draw(batch, scoreStr, Gdx.graphics.getWidth()/2 - 20, Gdx.graphics.getHeight() - 10);
+		font.draw(batch, scoreStr, PongGame.fieldWidht/2 - 10, PongGame.fieldHeight - 10);
 	}
 
 	public int getScore(players player) {
