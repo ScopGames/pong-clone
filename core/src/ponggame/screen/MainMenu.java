@@ -310,7 +310,9 @@ public class MainMenu implements Screen, InputProcessor {
 	}
 	
 	@Override
-	public void resize(int width, int height) {		
+	public void resize(int width, int height) 
+	{	
+		this.stage.getViewport().update(width, height);
 	}
 
 	@Override
