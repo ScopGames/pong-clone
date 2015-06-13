@@ -11,6 +11,7 @@ public class DesktopLauncher {
 		config.width = 640;
 		config.height  = 480;
 		config.title = "Pong Game";
+		//config.resizable = false;
 		new LwjglApplication(new Main(), config);
 	}
 }
