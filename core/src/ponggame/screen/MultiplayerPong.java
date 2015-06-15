@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
-import ponggame.entity.Ball;
 import ponggame.input.PlayerInput;
 import ponggame.input.RemotePlayerInput;
 import ponggame.renderentities.RenderableBall;
@@ -23,6 +22,7 @@ import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Json;
 
 public class MultiplayerPong implements Screen {
 
@@ -191,73 +191,64 @@ public class MultiplayerPong implements Screen {
 	 */
 	private void syncFromServer()
 	{
-		 packet = NetworkHelper.receive(socket);
+		packet = NetworkHelper.receive(socket);
 		
-		try
+		byte[] buffer = packet.getData();
+		Json json = new Json();
+		String data = new String(buffer);
+		data = data.trim();
+		Data gameData = json.fromJson(Data.class, data);
+			
+		Vector2 vBall = gameData.getGameEntity().getBall();
+		ball.setPosition(vBall.x, vBall.y);
+		Vector2 vPaddle1 = gameData.getGameEntity().getPaddle1();
+		Vector2 vPaddle2 = gameData.getGameEntity().getPaddle2();
+		
+		boolean firstSync= true;
+		if(firstSync == true)
 		{
-			Data gameData = (Data)NetworkHelper.deserialize(packet.getData());
-			
-			Vector2 vBall = gameData.getGameEntity().getBall();
-			ball.setPosition(vBall.x, vBall.y);
-			Vector2 vPaddle1 = gameData.getGameEntity().getPaddle1();
-			Vector2 vPaddle2 = gameData.getGameEntity().getPaddle2();
-			
-			boolean firstSync= true;
-			if(firstSync == true)
+			paddleLeft.setPosition(vPaddle1.x, vPaddle1.y);
+			paddleRight.setPosition(vPaddle2.x, vPaddle2.y);
+			firstSync = false;
+		}
+		
+		if(isPaddleLeft)
+		{
+			if((input.getLastTask() == Task.GOING_DOWN && vPaddle1.y < input.getTmpPosition().y)||
+					(input.getLastTask() == Task.GOING_UP && vPaddle1.y > input.getTmpPosition().y))
 			{
+				// update the paddle with the position sent from the server
 				paddleLeft.setPosition(vPaddle1.x, vPaddle1.y);
-				paddleRight.setPosition(vPaddle2.x, vPaddle2.y);
-				firstSync = false;
 			}
-			
-			if(isPaddleLeft)
+			else if ((input.getLastTask() == Task.GOING_DOWN && vPaddle1.y > input.getTmpPosition().y)||
+					(input.getLastTask() == Task.GOING_UP && vPaddle1.y < input.getTmpPosition().y))
 			{
-				if((input.getLastTask() == Task.GOING_DOWN && vPaddle1.y < input.getTmpPosition().y)||
-						(input.getLastTask() == Task.GOING_UP && vPaddle1.y > input.getTmpPosition().y))
-				{
-					// update the paddle with the position sent from the server
-					paddleLeft.setPosition(vPaddle1.x, vPaddle1.y);
-				}
-				else if ((input.getLastTask() == Task.GOING_DOWN && vPaddle1.y > input.getTmpPosition().y)||
-						(input.getLastTask() == Task.GOING_UP && vPaddle1.y < input.getTmpPosition().y))
-				{
-					// update the paddle with the local new Y. This will ignore the 
-					// position sent from the server which is not correct due to 
-					// UDP latency and not ordered packets.
-					paddleLeft.setPosition(vPaddle1.x, input.getTmpPosition().y);
-				}
-				else
-				{
-					// no movement
-				}
+				// update the paddle with the local new Y. This will ignore the 
+				// position sent from the server which is not correct due to 
+				// UDP latency and not ordered packets.
+				paddleLeft.setPosition(vPaddle1.x, input.getTmpPosition().y);
 			}
 			else
-			{				
-				if((input.getLastTask() == Task.GOING_DOWN && vPaddle2.y < input.getTmpPosition().y)||
-						(input.getLastTask() == Task.GOING_UP && vPaddle2.y > input.getTmpPosition().y))
-				{
-					paddleRight.setPosition(vPaddle2.x, vPaddle2.y);
-				}
-				else if ((input.getLastTask() == Task.GOING_DOWN && vPaddle2.y > input.getTmpPosition().y)||
-						(input.getLastTask() == Task.GOING_UP && vPaddle2.y < input.getTmpPosition().y))
-				{
-					paddleRight.setPosition(vPaddle2.x, input.getTmpPosition().y);
-				}
-				else
-				{
-					// no movement
-				}
+			{
+				// no movement
 			}
-			
-			
-		} 
-		catch (ClassNotFoundException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
 		}
+		else
+		{				
+			if((input.getLastTask() == Task.GOING_DOWN && vPaddle2.y < input.getTmpPosition().y)||
+					(input.getLastTask() == Task.GOING_UP && vPaddle2.y > input.getTmpPosition().y))
+			{
+				paddleRight.setPosition(vPaddle2.x, vPaddle2.y);
+			}
+			else if ((input.getLastTask() == Task.GOING_DOWN && vPaddle2.y > input.getTmpPosition().y)||
+					(input.getLastTask() == Task.GOING_UP && vPaddle2.y < input.getTmpPosition().y))
+			{
+				paddleRight.setPosition(vPaddle2.x, input.getTmpPosition().y);
+			}
+			else
+			{
+				// no movement
+			}
+		}		
 	}
 }
