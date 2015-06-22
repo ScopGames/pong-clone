@@ -6,6 +6,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ponggame.entity.Ball;
 import ponggame.entity.GameEntity;
@@ -25,6 +27,7 @@ public class PongServer
 	 * clients.get(0) is the left Paddle
 	 * clients.get(0) is the right Paddle
 	 */
+	private ArrayList<Boolean> playersAck;
 	private ArrayList<NetworkNode> clients;
 	private DatagramSocket socket;
 	private GameEntity gameEntity;
@@ -42,6 +45,7 @@ public class PongServer
 	public PongServer() throws SocketException
 	{
 		clients = new ArrayList<NetworkNode>();
+		playersAck = new ArrayList<Boolean>();
 		socket = NetworkHelper.getSocket(DEFAULT_PORT);
 		gameState = GAME_STATE.PLAYERS_CONNECTING;
 		
@@ -93,6 +97,7 @@ public class PongServer
 				
 				if (player != PLAYER.NOT_A_BANANA)
 				{
+					setPlayersAck();
 					updatePaddlesDown(player, updatedGame);
 				}
 				else
@@ -107,6 +112,7 @@ public class PongServer
 			
 			if (player != PLAYER.NOT_A_BANANA)
 			{
+				setPlayersAck();
 				updatePaddlesUp(player, updatedGame);
 			}
 							
@@ -139,7 +145,7 @@ public class PongServer
 	{
 		if(clients.size() < 2)
 		{		
-			DatagramSocket socket = NetworkHelper.getSocket();
+			final DatagramSocket socket = NetworkHelper.getSocket();
 			Data data = new Data(Task.CONNECTED);
 			
 			if (clients.size() == 0)
@@ -155,19 +161,33 @@ public class PongServer
 				{
 					clients.add(new NetworkNode(address, port));
 				
-					data.setTask(Task.INIT_GAME_LEFT);
-					NetworkHelper.send(socket, clients.get(0), data);
-					
-					data.setTask(Task.INIT_GAME_RIGHT);
-					NetworkHelper.send(socket, clients.get(1), data);
-					
-					gameState = GAME_STATE.STARTED;
-				}
-			} 
-		}
+					Timer t = new Timer();
+					t.schedule(new TimerTask() 
+					{						
+						@Override
+						public void run() 
+						{
+							if(playersAck.size() < 2 )
+							{  
+								System.out.println("inviato ");
+								Data data = new Data();
+								data.setTask(Task.INIT_GAME_LEFT);
+								NetworkHelper.send(socket, clients.get(0), data);
+								
+								data.setTask(Task.INIT_GAME_RIGHT);
+								NetworkHelper.send(socket, clients.get(1), data);
+								
+								gameState = GAME_STATE.STARTED;
+							}
+						}
+					}, 0, 250);					
+				}				
+			}
+		} 
 		else
 			System.out.println("all players already connected");
 	}
+
 	
 	public void printClientsInfo()
 	{
@@ -271,5 +291,15 @@ public class PongServer
 			player = PLAYER.NOT_A_BANANA;
 		
 		return player;
+	}
+	
+	private void setPlayersAck()
+	{
+		PLAYER player = getPlayerSide();
+		
+		if(player == PLAYER.LEFT)
+			playersAck.add(true);
+		else if (player == PLAYER.RIGHT)
+			playersAck.add(true);
 	}
 }
