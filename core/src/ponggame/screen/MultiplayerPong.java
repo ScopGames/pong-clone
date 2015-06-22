@@ -84,7 +84,17 @@ public class MultiplayerPong implements Screen {
 			public void run() 
 			{
 				while(true)
-					syncFromServer();
+				{
+					packet = NetworkHelper.receive(socket);
+					byte[] buffer = packet.getData();
+					Json json = new Json();
+					String data = new String(buffer);
+					data = data.trim();
+					Data gameData = json.fromJson(Data.class, data);
+					
+					if (gameData.getTask() == Task.UPDATE_GAME_ENTITIES)
+						syncFromServer(gameData);
+				}
 			}
 		});
 		t.start();
@@ -189,16 +199,8 @@ public class MultiplayerPong implements Screen {
 	/**
 	 * Sync the game's state with the server
 	 */
-	private void syncFromServer()
-	{
-		packet = NetworkHelper.receive(socket);
-		
-		byte[] buffer = packet.getData();
-		Json json = new Json();
-		String data = new String(buffer);
-		data = data.trim();
-		Data gameData = json.fromJson(Data.class, data);
-			
+	private void syncFromServer(Data gameData)
+	{		
 		Vector2 vBall = gameData.getGameEntity().getBall();
 		ball.setPosition(vBall.x, vBall.y);
 		Vector2 vPaddle1 = gameData.getGameEntity().getPaddle1();
