@@ -26,6 +26,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
@@ -138,9 +139,7 @@ public class MainMenu implements Screen, InputProcessor {
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
 				String ipAddress = ipInput.getText();
-				
 				server = new NetworkNode(ipAddress, PongServer.DEFAULT_PORT);
-				
 				connectToServer(server);
 			}
 		});
@@ -280,6 +279,8 @@ public class MainMenu implements Screen, InputProcessor {
 		System.out.println("MainMenu : Packet sent");
 		connectionStatusLabel.setText("Packet sent");
 		
+		submitIpButton.setTouchable(Touchable.disabled);
+		
 		final Thread t = new Thread(new ReceivingHandler(socket, connectionStatusLabel));
 		t.start();
 
@@ -299,6 +300,7 @@ public class MainMenu implements Screen, InputProcessor {
 					t.interrupt();
 					connectionStatusLabel.setText("No repsonse...");
 					System.out.println("Thread stopped");
+					submitIpButton.setTouchable(Touchable.enabled);
 				}				
 				//else means that: 
 				// - one player is connected and he is waiting for the other one
@@ -393,6 +395,7 @@ public class MainMenu implements Screen, InputProcessor {
 		{
 			System.out.println("Thread: Waiting for server response");
 			tconnection.setText("Connecting...");
+			
 			DatagramPacket packet;
 						
 			do
@@ -401,15 +404,13 @@ public class MainMenu implements Screen, InputProcessor {
 				byte[] buffer = packet.getData();
 				Json json = new Json();
 				String d = new String(buffer);
-				d= d.trim();
+				d = d.trim();
 				Data data = json.fromJson(Data.class, d);
 				System.out.println("Receveid packet. Task = " + data.getTask());
 				tconnection.setText("Task = " + data.getTask());
 				threadTask = data.getTask();
 			}
 			while (threadTask != Task.INIT_GAME_LEFT && threadTask != Task.INIT_GAME_RIGHT);
-			 
-		
 		}
 	}
 }
