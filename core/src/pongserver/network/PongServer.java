@@ -75,7 +75,7 @@ public class PongServer
 		byte[] buffer = packet.getData();
 		Json json = new Json();
 		String data = new String(buffer);
-		data= data.trim();
+		data = data.trim();
 		Data gameData = json.fromJson(Data.class, data);
 		
 		
@@ -138,28 +138,30 @@ public class PongServer
 	private void register(InetAddress address, int port)
 	{
 		if(clients.size() < 2)
-		{
-			clients.add(new NetworkNode(address, port));
-			
+		{		
 			DatagramSocket socket = NetworkHelper.getSocket();
 			Data data = new Data(Task.CONNECTED);
 			
-			if (clients.size() == 1)
+			if (clients.size() == 0)
 			{
+				clients.add(new NetworkNode(address, port));
 				NetworkHelper.send(socket, clients.get(0), data);
 			}
 			
-			if (clients.size() == 2)
-			{				
-				data.setTask(Task.INIT_GAME_LEFT);
-				NetworkHelper.send(socket, clients.get(0), data);
+			if (clients.size() == 1)
+			{	
+				if (address == clients.get(0).ipaddress)
+					System.out.println("Client " + address + " alredy connected");
+				else
+					clients.add(new NetworkNode(address, port));
 				
-				data.setTask(Task.INIT_GAME_RIGHT);
-				NetworkHelper.send(socket, clients.get(1), data);
-				
-				gameState = GAME_STATE.STARTED;
-				
-				//TODO close the socket ? 
+					data.setTask(Task.INIT_GAME_LEFT);
+					NetworkHelper.send(socket, clients.get(0), data);
+					
+					data.setTask(Task.INIT_GAME_RIGHT);
+					NetworkHelper.send(socket, clients.get(1), data);
+					
+					gameState = GAME_STATE.STARTED;
 			} 
 		}
 		else
