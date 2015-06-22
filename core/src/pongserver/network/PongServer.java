@@ -156,7 +156,8 @@ public class PongServer
 				else
 				{
 					clients.add(new NetworkNode(address, port));
-				
+					gameState = GAME_STATE.STARTED;
+					
 					Timer t = new Timer();
 					t.schedule(new TimerTask() 
 					{						
@@ -170,9 +171,6 @@ public class PongServer
 								Data data = new Data();
 								data.setTask(Task.INIT_GAME_LEFT);
 								NetworkHelper.send(socket, clients.get(0), data);
-								
-								//TODO ???
-								gameState = GAME_STATE.STARTED;
 							}
 							
 							if(playersAck.get(1) == false)
@@ -181,8 +179,6 @@ public class PongServer
 								
 								data.setTask(Task.INIT_GAME_RIGHT);
 								NetworkHelper.send(socket, clients.get(1), data);
-								
-								gameState = GAME_STATE.STARTED;
 							}
 						}
 					}, 0, 250);
