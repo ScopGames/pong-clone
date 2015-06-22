@@ -23,10 +23,6 @@ import com.badlogic.gdx.utils.Json;
 
 public class PongServer 
 {
-	/**
-	 * clients.get(0) is the left Paddle
-	 * clients.get(0) is the right Paddle
-	 */
 	private ArrayList<Boolean> playersAck;
 	private ArrayList<NetworkNode> clients;
 	private DatagramSocket socket;
@@ -34,18 +30,20 @@ public class PongServer
 	private GameEntity updatedGame;
 	private Ball ball;
 	private Paddle paddleLeft, paddleRight;
-	private DatagramPacket packet;
+	private boolean debugMode = true;
 	
 	public final static int DEFAULT_PORT = 9876;
 	public enum GAME_STATE {PLAYERS_CONNECTING, STARTED};
 	public GAME_STATE gameState;
-	
 	private enum PLAYER{LEFT, RIGHT, NOT_A_BANANA}
 	
 	public PongServer() throws SocketException
 	{
 		clients = new ArrayList<NetworkNode>();
 		playersAck = new ArrayList<Boolean>();
+		playersAck.add(false); // player 1 ack
+		playersAck.add(false); // player 2 ack
+		
 		socket = NetworkHelper.getSocket(DEFAULT_PORT);
 		gameState = GAME_STATE.PLAYERS_CONNECTING;
 		
@@ -74,14 +72,15 @@ public class PongServer
 	 */
 	public void listen()
 	{		
-		packet = NetworkHelper.receive(socket); // blocking
-				
+		DatagramPacket packet = NetworkHelper.receive(socket); // blocking
+		
+		System.out.println("PongServer::listen() method");
+		
 		byte[] buffer = packet.getData();
 		Json json = new Json();
 		String data = new String(buffer);
 		data = data.trim();
 		Data gameData = json.fromJson(Data.class, data);
-		
 		
 		PLAYER player;			
 		switch (gameData.getTask())
@@ -91,38 +90,35 @@ public class PongServer
 				break;
 								
 			case GOING_DOWN:
-				player = getPlayerSide();
+				player = getPlayerSide(packet);
+				setPlayerAck(player);
 				
 				updatedGame = gameData.getGameEntity();
 				
 				if (player != PLAYER.NOT_A_BANANA)
 				{
-					setPlayersAck();
 					updatePaddlesDown(player, updatedGame);
 				}
 				else
 					System.out.println("siamo delle banane");
-			
-			break;
+				break;
 		
-		case GOING_UP:
-			player = getPlayerSide();
-			
-			updatedGame = gameData.getGameEntity();
-			
-			if (player != PLAYER.NOT_A_BANANA)
-			{
-				setPlayersAck();
-				updatePaddlesUp(player, updatedGame);
-			}
-							
-			break;
+			case GOING_UP:
+				player = getPlayerSide(packet);
+				setPlayerAck(player);
+				
+				updatedGame = gameData.getGameEntity();
+				
+				if (player != PLAYER.NOT_A_BANANA)
+				{
+					updatePaddlesUp(player, updatedGame);
+				}			
+				break;
 		
-		default:
-			break; 
+			default:
+				break; 
+		}
 	}
-
-}
 	
 	public void sendDataToPlayers()
 	{
@@ -155,7 +151,7 @@ public class PongServer
 			}
 			else if (clients.size() == 1)
 			{	
-				if (address.equals(clients.get(0).ipaddress))
+				if (address.equals(clients.get(0).ipaddress) && !debugMode)
 					System.out.println("Client " + address + " alredy connected");
 				else
 				{
@@ -167,12 +163,21 @@ public class PongServer
 						@Override
 						public void run() 
 						{
-							if(playersAck.size() < 2 )
-							{  
-								System.out.println("inviato ");
+							System.out.println(playersAck);
+							
+							if(playersAck.get(0) == false)
+							{
 								Data data = new Data();
 								data.setTask(Task.INIT_GAME_LEFT);
 								NetworkHelper.send(socket, clients.get(0), data);
+								
+								//TODO ???
+								gameState = GAME_STATE.STARTED;
+							}
+							
+							if(playersAck.get(1) == false)
+							{
+								Data data = new Data();
 								
 								data.setTask(Task.INIT_GAME_RIGHT);
 								NetworkHelper.send(socket, clients.get(1), data);
@@ -180,7 +185,7 @@ public class PongServer
 								gameState = GAME_STATE.STARTED;
 							}
 						}
-					}, 0, 250);					
+					}, 0, 250);
 				}				
 			}
 		} 
@@ -188,7 +193,6 @@ public class PongServer
 			System.out.println("all players already connected");
 	}
 
-	
 	public void printClientsInfo()
 	{
 		for (NetworkNode player : clients) 
@@ -278,7 +282,7 @@ public class PongServer
 		}
 	}
 	
-	private PLAYER getPlayerSide()
+	private PLAYER getPlayerSide(DatagramPacket packet)
 	{
 		//boolean paddleLeft = false;
 		PLAYER player;	
@@ -293,13 +297,15 @@ public class PongServer
 		return player;
 	}
 	
-	private void setPlayersAck()
-	{
-		PLAYER player = getPlayerSide();
-		
-		if(player == PLAYER.LEFT)
-			playersAck.add(true);
-		else if (player == PLAYER.RIGHT)
-			playersAck.add(true);
+	private void setPlayerAck(PLAYER player)
+	{			
+		if(player == PLAYER.LEFT && playersAck.get(0) == false)
+		{
+			playersAck.set(0, true);			
+		}
+		else if (player == PLAYER.RIGHT && playersAck.get(1) == false)
+		{
+			playersAck.set(1, true);
+		}
 	}
 }
