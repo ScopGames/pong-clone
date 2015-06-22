@@ -180,6 +180,10 @@ public class PongServer
 								data.setTask(Task.INIT_GAME_RIGHT);
 								NetworkHelper.send(socket, clients.get(1), data);
 							}
+							
+							// if both players are connected and playing
+							if(playersAck.get(0) && playersAck.get(0))
+								this.cancel(); // cancel this task
 						}
 					}, 0, 250);
 				}				
