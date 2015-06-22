@@ -147,12 +147,12 @@ public class PongServer
 				clients.add(new NetworkNode(address, port));
 				NetworkHelper.send(socket, clients.get(0), data);
 			}
-			
-			if (clients.size() == 1)
+			else if (clients.size() == 1)
 			{	
-				if (address == clients.get(0).ipaddress)
+				if (address.equals(clients.get(0).ipaddress))
 					System.out.println("Client " + address + " alredy connected");
 				else
+				{
 					clients.add(new NetworkNode(address, port));
 				
 					data.setTask(Task.INIT_GAME_LEFT);
@@ -162,6 +162,7 @@ public class PongServer
 					NetworkHelper.send(socket, clients.get(1), data);
 					
 					gameState = GAME_STATE.STARTED;
+				}
 			} 
 		}
 		else
