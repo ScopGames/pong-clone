@@ -7,8 +7,8 @@ import ponggame.input.PlayerInput;
 import ponggame.input.RemotePlayerInput;
 import ponggame.renderentities.RenderableBall;
 import ponggame.renderentities.RenderablePaddle;
-import ponggame.ui.Score;
-import ponggame.ui.Score.players;
+import ponggame.renderentities.RenderableScore;
+import ponggame.entity.Score.players;
 import pongserver.utility.Data;
 import pongserver.utility.NetworkHelper;
 import pongserver.utility.NetworkHelper.Task;
@@ -35,7 +35,7 @@ public class MultiplayerPong implements Screen {
 	private SpriteBatch batch;
 	private RenderablePaddle paddleLeft, paddleRight;
 	private RenderableBall ball;
-	private Score score;
+	private RenderableScore score;
 	private RemotePlayerInput input;
 	private FPSLogger fpsLogger;
 	private boolean isPaddleLeft;
@@ -84,7 +84,7 @@ public class MultiplayerPong implements Screen {
 		viewport = new StretchViewport(PongGame.fieldWidht, PongGame.fieldHeight, camera);
 		
 		// still not used
-		score = new Score();
+		score = new RenderableScore();
 		
 		System.out.println("listening on " + socket.getLocalAddress() + " " + socket.getLocalPort());
 				

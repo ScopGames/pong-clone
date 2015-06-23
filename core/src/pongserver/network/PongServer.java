@@ -127,7 +127,11 @@ public class PongServer
 		{
 			if(ball.getPosition().x < 0f)
 			{
-				gameEntity.s
+				gameEntity.setScore(1, 0);
+			}
+			else
+			{
+				gameEntity.setScore(0, 1);
 			}
 		}
 		Data d = new Data(Task.UPDATE_GAME_ENTITIES, gameEntity);
@@ -307,14 +311,10 @@ public class PongServer
 	
 	private void setPlayerAck(PLAYER player)
 	{			
-		if(player == PLAYER.LEFT && playersAck.get(0) == false)
-		{
-			playersAck.set(0, true);			
-		}
+		if(player == PLAYER.LEFT && playersAck.get(0) == false) 
+			playersAck.set(0, true);		
 		else if (player == PLAYER.RIGHT && playersAck.get(1) == false)
-		{
 			playersAck.set(1, true);
-		}
 	}
 	
 	private boolean ballLost()

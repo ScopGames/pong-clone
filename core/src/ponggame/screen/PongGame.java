@@ -1,11 +1,11 @@
 package ponggame.screen;
 
+import ponggame.entity.Score.players;
 import ponggame.input.LocalPlayerInput;
 import ponggame.input.PlayerInput;
 import ponggame.renderentities.RenderableBall;
 import ponggame.renderentities.RenderablePaddle;
-import ponggame.ui.Score;
-import ponggame.ui.Score.players;
+import ponggame.renderentities.RenderableScore;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -22,7 +22,7 @@ public class PongGame implements Screen
 {
 	private RenderablePaddle paddleLeft, paddleRight;
 	private RenderableBall ball;
-	private Score score;
+	private RenderableScore score;
 	private PlayerInput input1, input2;
 	
 	private final static int winningScore = 10;
@@ -39,7 +39,7 @@ public class PongGame implements Screen
 	{	
 		initializePaddles();
 		initializeBall();
-		score = new Score();
+		score = new RenderableScore();
 		input1 = new LocalPlayerInput(paddleLeft, PlayerInput.layoutInput.WASD);
 		input2 = new LocalPlayerInput(paddleRight, PlayerInput.layoutInput.ARROWS);
 		
