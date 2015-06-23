@@ -12,6 +12,7 @@ import java.util.TimerTask;
 import ponggame.entity.Ball;
 import ponggame.entity.GameEntity;
 import ponggame.entity.Paddle;
+import ponggame.screen.PongGame;
 import pongserver.utility.Data;
 import pongserver.utility.NetworkHelper;
 import pongserver.utility.NetworkHelper.Task;
@@ -122,6 +123,13 @@ public class PongServer
 	
 	public void sendDataToPlayers()
 	{
+		if (ballLost())
+		{
+			if(ball.getPosition().x < 0f)
+			{
+				gameEntity.s
+			}
+		}
 		Data d = new Data(Task.UPDATE_GAME_ENTITIES, gameEntity);
 		
 		for (NetworkNode player : clients) 
@@ -308,4 +316,20 @@ public class PongServer
 			playersAck.set(1, true);
 		}
 	}
+	
+	private boolean ballLost()
+	{
+		boolean lost = false;
+		
+		float xball = ball.getPosition().x;
+		
+		
+		if(xball+ball.getWidth() < 0 || xball > PongGame.fieldWidht )
+			lost= true;
+		
+		return lost;
+	}
+	
+	
+	
 }
