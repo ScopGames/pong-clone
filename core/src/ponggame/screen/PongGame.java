@@ -46,7 +46,7 @@ public class PongGame implements Screen
 		batch = new SpriteBatch();
 		
 		camera = new OrthographicCamera(); // camera points at (0,0)
-		camera.translate(fieldWidht/2, fieldHeight/2);
+		camera.translate(fieldWidht/2, fieldHeight/2); // centers the camera
 		viewport = new StretchViewport(fieldWidht, fieldHeight, camera);
 	}
 
@@ -169,5 +169,6 @@ public class PongGame implements Screen
 	@Override
 	public void hide() 
 	{		
+		
 	}
 }
