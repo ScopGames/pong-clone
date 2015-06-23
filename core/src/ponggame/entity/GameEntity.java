@@ -2,6 +2,8 @@ package ponggame.entity;
 
 import java.util.Vector;
 
+import ponggame.entity.Score.players;
+
 import com.badlogic.gdx.math.Vector2;
 
 public class GameEntity {
@@ -22,7 +24,7 @@ public class GameEntity {
 		// empty constructor needed for json serialize & deserialize
 	}
 	
-	public GameEntity(Vector2 ball, Vector2 paddle1,Vector2 paddle2)
+	public GameEntity(Vector2 ball, Vector2 paddle1, Vector2 paddle2)
 	{
 		this.ball = ball;
 		this.paddle1 = paddle1;
@@ -64,9 +66,9 @@ public class GameEntity {
 		return score;
 	}
 
-	public void setScore(int a, int b) 
+	public void setScore(Score score) 
 	{
-		this.score = new Vector2(a, b);
+		this.score = new Vector2(score.getScore(players.PLAYER1), score.getScore(players.PLAYER2));
 	}
 	
 	public boolean containScore()

@@ -12,6 +12,8 @@ import java.util.TimerTask;
 import ponggame.entity.Ball;
 import ponggame.entity.GameEntity;
 import ponggame.entity.Paddle;
+import ponggame.entity.Score;
+import ponggame.entity.Score.players;
 import ponggame.screen.PongGame;
 import pongserver.utility.Data;
 import pongserver.utility.NetworkHelper;
@@ -32,7 +34,7 @@ public class PongServer
 	private Ball ball;
 	private Paddle paddleLeft, paddleRight;
 	private boolean debugMode = true;
-	
+	private Score score;
 	public final static int DEFAULT_PORT = 9876;
 	public enum GAME_STATE {PLAYERS_CONNECTING, STARTED};
 	public GAME_STATE gameState;
@@ -125,14 +127,17 @@ public class PongServer
 	{
 		if (ballLost())
 		{
+			
 			if(ball.getPosition().x < 0f)
-			{
-				gameEntity.setScore(1, 0);
+			{	
+				score.addPoint(players.PLAYER1);
+				
 			}
 			else
 			{
-				gameEntity.setScore(0, 1);
+				score.addPoint(players.PLAYER2);
 			}
+			gameEntity.setScore(score);
 		}
 		Data d = new Data(Task.UPDATE_GAME_ENTITIES, gameEntity);
 		
