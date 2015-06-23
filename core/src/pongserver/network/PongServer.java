@@ -190,7 +190,7 @@ public class PongServer
 							}
 							
 							// if both players are connected and playing
-							if(playersAck.get(0) && playersAck.get(0))
+							if(playersAck.get(0) && playersAck.get(1))
 								this.cancel(); // cancel this task
 						}
 					}, 0, 250);

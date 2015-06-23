@@ -19,9 +19,12 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class MultiplayerPong implements Screen {
 
@@ -36,6 +39,10 @@ public class MultiplayerPong implements Screen {
 	private RemotePlayerInput input;
 	private FPSLogger fpsLogger;
 	private boolean isPaddleLeft;
+	
+	private OrthographicCamera camera;
+	private Viewport viewport;
+	
 	boolean firstSync= true;
 	
 	public MultiplayerPong(DatagramSocket socket, NetworkNode server, 
@@ -51,6 +58,7 @@ public class MultiplayerPong implements Screen {
 	{
 		initializePaddles();
 		initializeBall();
+		
 		
 		if (isPaddleLeft)
 		{
@@ -71,9 +79,12 @@ public class MultiplayerPong implements Screen {
 		
 		batch = new SpriteBatch();
 		
+		camera = new OrthographicCamera(); // camera points at (0,0)
+		camera.translate(PongGame.fieldWidht/2, PongGame.fieldHeight/2); // centers the camera
+		viewport = new StretchViewport(PongGame.fieldWidht, PongGame.fieldHeight, camera);
+		
 		// still not used
 		score = new Score();
-
 		
 		System.out.println("listening on " + socket.getLocalAddress() + " " + socket.getLocalPort());
 				
@@ -105,6 +116,10 @@ public class MultiplayerPong implements Screen {
 	public void render(float delta) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
+		camera = (OrthographicCamera) viewport.getCamera();
+		camera.update();
+		batch.setProjectionMatrix(camera.combined);
+		
 		batch.begin();
 			
 		updateGameEntities(delta);
@@ -119,7 +134,7 @@ public class MultiplayerPong implements Screen {
 	
 	@Override
 	public void resize(int width, int height) {
-
+		viewport.update(width, height);
 	}
 
 	@Override
@@ -200,6 +215,13 @@ public class MultiplayerPong implements Screen {
 	 */
 	private void syncFromServer(Data gameData)
 	{		
+		
+		// if (gameData.containScore() == true)
+		{
+			// update score 
+			// and send ack containing current score to server
+		}
+			
 		Vector2 vBall = gameData.getGameEntity().getBall();
 		ball.setPosition(vBall.x, vBall.y);
 		Vector2 vPaddle1 = gameData.getGameEntity().getPaddle1();

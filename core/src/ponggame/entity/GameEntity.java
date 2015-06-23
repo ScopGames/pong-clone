@@ -1,5 +1,7 @@
 package ponggame.entity;
 
+import java.util.Vector;
+
 import com.badlogic.gdx.math.Vector2;
 
 public class GameEntity {
@@ -13,6 +15,7 @@ public class GameEntity {
 	 */
 	private Vector2 paddle2;
 	private Vector2 ball;
+	private Vector2 score;
 	
 	public GameEntity()
 	{
@@ -54,5 +57,20 @@ public class GameEntity {
 	public void setBall(Vector2 ball) 
 	{
 		this.ball = ball;
+	}
+
+	public Vector2 getScore() 
+	{
+		return score;
+	}
+
+	public void setScore(int a, int b) 
+	{
+		this.score = new Vector2(a, b);
+	}
+	
+	public boolean containScore()
+	{
+		return (this.score != null);
 	}
 }
