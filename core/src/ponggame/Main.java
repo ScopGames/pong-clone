@@ -30,12 +30,7 @@ public class Main extends Game
 			
 			case PONGGAME:
 				((Game)Gdx.app.getApplicationListener()).setScreen(new PongGame());
-				break;
-			
-			//case MULTIPLAYER_PONG_GAME:
-				//((Game)Gdx.app.getApplicationListener()).setScreen(new MultiplayerPong());
-				//break;
-				
+				break;				
 			default:
 				break;
 		}		
