@@ -58,7 +58,10 @@ public class PongServerLauncher
 				{
 					if(server.gameState == PongServer.GAME_STATE.STARTED)
 					{
-						server.updateBall(1/20f);
+						// convert responseDelay in seconds
+						float delta = (float)(responseDelay/1000.0f);
+
+						server.updateBall(delta);
 						server.sendDataToPlayers();
 					}
 					else

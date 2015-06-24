@@ -1,6 +1,5 @@
 package ponggame.entity;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -123,4 +122,11 @@ public class Ball
 		
 		return collision;
 	}
+
+	public void setVelocity(float x, float y) 
+	{
+		this.velocity = new Vector2(x, y);
+	}
+	
+	
 }
