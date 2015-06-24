@@ -51,8 +51,7 @@ public class PongServer
 		gameState = GAME_STATE.PLAYERS_CONNECTING;
 		
 		// TODO use a random position ?
-		// TODO get velocity from a configuration file look at #issue12
-		ball = new Ball(new Vector2(300, 400), new Vector2(60, 25)); 
+		ball = new Ball(new Vector2(320, 400), new Vector2(PongGame.ballSpeedX, PongGame.ballSpeedY)); 
 		paddleLeft = new Paddle(new Vector2(0, 250));
 		paddleRight = new Paddle(new Vector2(640-20, 250)); // 640 is the screen width
 		
@@ -125,19 +124,24 @@ public class PongServer
 	public void sendDataToPlayers()
 	{
 		if (ballLost())
-		{
-			
+		{		
 			if(ball.getPosition().x < 0f)
 			{	
 				score.addPoint(players.PLAYER1);
-				
 			}
 			else
 			{
 				score.addPoint(players.PLAYER2);
 			}
 			gameEntity.setScore(score);
+			
+			System.out.println("Player1: " + score.getScore(players.PLAYER1));
+			System.out.println("Player2: " + score.getScore(players.PLAYER2));
+			
+			ball.setPosition(320, 400);
+			ball.setVelocity(PongGame.ballSpeedX, PongGame.ballSpeedY);
 		}
+		
 		Data d = new Data(Task.UPDATE_GAME_ENTITIES, gameEntity);
 		
 		for (NetworkNode player : clients) 

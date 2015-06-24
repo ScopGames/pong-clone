@@ -122,4 +122,11 @@ public class Ball
 		
 		return collision;
 	}
+
+	public void setVelocity(float x, float y) 
+	{
+		this.velocity = new Vector2(x, y);
+	}
+	
+	
 }

@@ -28,6 +28,8 @@ public class PongGame implements Screen
 	private final static int winningScore = 10;
 	public final static int fieldWidht = 640;
 	public final static int fieldHeight = 480;
+	public final static int ballSpeedX = 60*2; 
+	public final static int ballSpeedY = 25*2;
 	
 	private SpriteBatch batch;
 	private OrthographicCamera camera;
@@ -122,7 +124,7 @@ public class PongGame implements Screen
 	
 	private void initializeBall() 
 	{
-		float speed = 250;
+		//float speed = 250;
 		
 		float randomArea = 25;
 		float x = fieldWidht/2 - randomArea + MathUtils.random(randomArea);
@@ -130,7 +132,7 @@ public class PongGame implements Screen
 		Vector2 position = new Vector2(x, y);
 		
 		float sign = MathUtils.randomSign();
-		Vector2 velocity = new Vector2(sign*speed, sign*speed);
+		Vector2 velocity = new Vector2(sign*ballSpeedX, sign*ballSpeedY);
 		
 		ball = new RenderableBall(position, velocity);
 	}
