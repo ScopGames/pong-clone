@@ -1,3 +1,8 @@
+/**
+ * NetworkHelper.java
+ * 
+ * This Class is responsable of Network's operations such as send and receive
+ */
 package pongserver.utility;
 
 import java.io.ByteArrayInputStream;
@@ -26,7 +31,13 @@ public class NetworkHelper
 		INIT_GAME_LEFT,
 		INIT_GAME_RIGHT,
 		CONNECTED}	
-       
+    
+	/**
+	 * Retrieve the Packet 
+	 * 
+	 * @param socket 
+	 * @return DatagramPacket 
+	 */
 	public static DatagramPacket receive(DatagramSocket socket)
     {
     	byte[] buffer = new byte[512];
@@ -98,6 +109,7 @@ public class NetworkHelper
 	}
 	
 	/**
+	 * Open a Socket on the given port
 	 * Warning, do not use this function unless you know
 	 * what you are doing !
 	 * @return 
@@ -119,6 +131,8 @@ public class NetworkHelper
 	}
 	
 	/**
+	 * Open a socket on a random port
+	 * 
 	 * Warning, do not use this function unless you know
 	 * what you are doing !
 	 * @return 
@@ -139,6 +153,14 @@ public class NetworkHelper
 		return sock;
 	}
 	
+	
+	/**
+	 * Send the Data d to the NetworkNode p through the socket
+	 * 
+	 * @param socket
+	 * @param p
+	 * @param d
+	 */
 	public static void send(DatagramSocket socket, NetworkNode p, Data d)
 	{
 	byte[] buffer;

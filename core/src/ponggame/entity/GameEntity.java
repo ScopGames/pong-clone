@@ -1,6 +1,10 @@
+/**
+ * GameEntity.java
+ * 
+ * Class to manage the entities of the game
+ */
 package ponggame.entity;
 
-import java.util.Vector;
 
 import ponggame.entity.Score.players;
 
@@ -16,14 +20,31 @@ public class GameEntity {
 	 * Right paddle
 	 */
 	private Vector2 paddle2;
+	/**
+	 * Ball
+	 */
 	private Vector2 ball;
+	/**
+	 * Information about the score
+	 */
 	private Vector2 score;
 	
+	/**
+	 * Empty constructor needed for json serialize & deserialize
+	 */
 	public GameEntity()
 	{
-		// empty constructor needed for json serialize & deserialize
+		
 	}
 	
+	/**
+	 * Constructor
+	 * 
+	 * Create an object with information about game entities
+	 * @param ball
+	 * @param paddle1
+	 * @param paddle2
+	 */
 	public GameEntity(Vector2 ball, Vector2 paddle1, Vector2 paddle2)
 	{
 		this.ball = ball;
@@ -31,6 +52,7 @@ public class GameEntity {
 		this.paddle2 = paddle2;
 	}
 
+	
 	public Vector2 getPaddle1() 
 	{
 		return paddle1;
@@ -71,6 +93,11 @@ public class GameEntity {
 		this.score = new Vector2(score.getScore(players.PLAYER1), score.getScore(players.PLAYER2));
 	}
 	
+	/**
+	 * Method used to understand if the GameEntity contains a score
+	 * 
+	 * @return boolean
+	 */
 	public boolean containScore()
 	{
 		return (this.score != null);
