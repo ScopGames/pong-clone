@@ -58,6 +58,7 @@ public class PongServer
 		
 		gameEntity = new GameEntity(ball.getPosition(), paddleLeft.getPosition(),
 				paddleRight.getPosition()); 
+		score = new Score();
 		
 		System.out.println("PongServer listening/sending on/from: " + socket.getLocalPort());
 	}
