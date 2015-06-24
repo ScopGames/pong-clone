@@ -77,9 +77,7 @@ public class PongServer
 	public void listen()
 	{		
 		DatagramPacket packet = NetworkHelper.receive(socket); // blocking
-		
-		System.out.println("PongServer::listen() method");
-		
+				
 		byte[] buffer = packet.getData();
 		Json json = new Json();
 		String data = new String(buffer);
