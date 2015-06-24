@@ -1,3 +1,8 @@
+/**
+ * MainMenu.java  
+ * 
+ * show the graphics of main menu and listen for player's input
+ */
 package ponggame.screen;
 
 import java.net.DatagramPacket;
@@ -58,6 +63,9 @@ public class MainMenu implements Screen, InputProcessor {
 	private static NetworkNode server;
 	DatagramSocket socket = NetworkHelper.getSocket();
 	
+	/**
+	 *  
+	 */
 	@Override
 	public void show() 
 	{
@@ -71,6 +79,9 @@ public class MainMenu implements Screen, InputProcessor {
 		stage.addActor(multiplayerTable);
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	public void render(float delta) 
 	{
@@ -81,6 +92,10 @@ public class MainMenu implements Screen, InputProcessor {
 		stage.draw();
 	}
 	
+	/**
+	 *  Creates the user interface with buttons listeners and a label and change the screen to multiplayerPong
+	 *  
+	 */
 	private void createUI()
 	{
 		atlas = new TextureAtlas(Gdx.files.internal("ui/img/buttons.pack"));
@@ -211,6 +226,10 @@ public class MainMenu implements Screen, InputProcessor {
 		});
 	}
 	
+	/**
+	 * Manage the transitions and animation in main menu
+	 * 	 
+	*/
 	private void initializeActions() 
 	{
 		final Tween menuTweenShow = new Tween(Interpolation.exp5Out, 0, -150, 1.0f);
@@ -268,9 +287,10 @@ public class MainMenu implements Screen, InputProcessor {
 		};
 	}
 	
+	
 	/**
-	 * 
-	 * @param network info about the server 
+	 * Manages the connection to server 
+	 * @param NetworkNode contains information about the server 
 	 */
 	private void connectToServer(NetworkNode p)
 	{
@@ -379,7 +399,12 @@ public class MainMenu implements Screen, InputProcessor {
 		return false;
 	}	
 	
-	
+	/**
+	 * 
+	 * @author pasquale
+	 *
+	 * A static class with a new thread that listen for packet client's side
+	 */
 	public static class ReceivingHandler implements Runnable {
 		
 		public DatagramSocket tsocket;
