@@ -1,3 +1,8 @@
+/**
+ * MultiplayerPong.java 
+ * 
+ * this class is responsable of the game between two clients
+ */
 package ponggame.screen;
 
 import java.net.DatagramPacket;
@@ -45,6 +50,14 @@ public class MultiplayerPong implements Screen {
 	
 	boolean firstSync= true;
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param socket client's port
+	 * @param server server's informations
+	 * @param isPaddleLeft boolean with the side of client's paddle
+	 * 
+	 */
 	public MultiplayerPong(DatagramSocket socket, NetworkNode server, 
 			boolean isPaddleLeft) 
 	{
@@ -53,6 +66,14 @@ public class MultiplayerPong implements Screen {
 		this.isPaddleLeft = isPaddleLeft;
 	}
 	
+	
+	/**
+	 * Show()
+	 * it handles graphics and create a new thread which receive packet from server 
+	 * 
+	 * @see #syncFromServer(Data)
+	 * 
+	 */
 	@Override
 	public void show() 
 	{
@@ -157,6 +178,9 @@ public class MultiplayerPong implements Screen {
 
 	}
 	
+	/**
+	 * initialize the graphics of paddles
+	 */
 	private void initializePaddles()
 	{
 		// Left paddle
@@ -166,6 +190,9 @@ public class MultiplayerPong implements Screen {
 		paddleRight = new RenderablePaddle(new Vector2(), new Color(0,1,0,1));
 	}
 	
+	/**
+	 * initialize the graphics of the ball with a  fake position
+	 */
 	private void initializeBall() 
 	{		
 		Vector2 dummy = new Vector2();
@@ -173,6 +200,11 @@ public class MultiplayerPong implements Screen {
 		ball = new RenderableBall(dummy, dummy);
 	}
 	
+	
+	/**
+	 * handle client's input 
+	 * @param delta render time 
+	 */
 	private void updateGameEntities(float delta) 
 	{	
 		input.handleInput(delta);
@@ -184,12 +216,18 @@ public class MultiplayerPong implements Screen {
 		}*/
 	}
 	
+	/**
+	 * Draw graphics
+	 */
 	private void drawGameEntities() {
 		paddleLeft.draw(batch);
 		paddleRight.draw(batch);
 		ball.draw(batch);		
 	}
 	
+	/**
+	 * update score graphics
+	 */
 	private void updateUI()
 	{
 		if (ball.getVelocity().x < 0f)
@@ -198,6 +236,11 @@ public class MultiplayerPong implements Screen {
 			score.addPoint(players.PLAYER1);
 	}
 
+	/**
+	 * detect if some player has scored
+	 * 
+	 * @return boolen
+	 */
 	private boolean ballLost() 
 	{
 		boolean lost = false;
@@ -212,6 +255,9 @@ public class MultiplayerPong implements Screen {
 	
 	/**
 	 * Sync the game's state with the server
+	 * 
+	 * @param gameData the data from server
+	 * @see  pongserver.utility.Data
 	 */
 	private void syncFromServer(Data gameData)
 	{		
