@@ -1,4 +1,4 @@
-package ponggame.renderentities;
+package ponggame.renderentity;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;

@@ -1,4 +1,4 @@
-package ponggame.renderentities;
+package ponggame.renderentity;
 
 import ponggame.entity.Score;
 import ponggame.screen.PongGame;

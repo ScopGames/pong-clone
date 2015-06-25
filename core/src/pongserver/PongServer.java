@@ -1,4 +1,4 @@
-package pongserver.network;
+package pongserver;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
