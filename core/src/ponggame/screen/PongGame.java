@@ -3,9 +3,9 @@ package ponggame.screen;
 import ponggame.entity.Score.players;
 import ponggame.input.LocalPlayerInput;
 import ponggame.input.PlayerInput;
-import ponggame.renderentities.RenderableBall;
-import ponggame.renderentities.RenderablePaddle;
-import ponggame.renderentities.RenderableScore;
+import ponggame.renderentity.RenderableBall;
+import ponggame.renderentity.RenderablePaddle;
+import ponggame.renderentity.RenderableScore;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;

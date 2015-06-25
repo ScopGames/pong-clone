@@ -10,9 +10,9 @@ import java.net.DatagramSocket;
 
 import ponggame.input.PlayerInput;
 import ponggame.input.RemotePlayerInput;
-import ponggame.renderentities.RenderableBall;
-import ponggame.renderentities.RenderablePaddle;
-import ponggame.renderentities.RenderableScore;
+import ponggame.renderentity.RenderableBall;
+import ponggame.renderentity.RenderablePaddle;
+import ponggame.renderentity.RenderableScore;
 import ponggame.entity.Score.players;
 import pongserver.utility.Data;
 import pongserver.utility.NetworkHelper;
