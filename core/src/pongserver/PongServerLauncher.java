@@ -4,8 +4,6 @@ import java.net.SocketException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import pongserver.network.PongServer;
-
 
 public class PongServerLauncher 
 {

@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ponggame.entity.GameEntity;
 import ponggame.entity.Paddle;
-import pongserver.network.PongServer;
+import pongserver.PongServer;
 import pongserver.utility.Data;
 import pongserver.utility.NetworkHelper;
 import pongserver.utility.NetworkHelper.Task;

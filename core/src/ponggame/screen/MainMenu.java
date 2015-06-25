@@ -12,7 +12,7 @@ import ponggame.Main;
 import ponggame.Main.Screens;
 import ponggame.entity.GameEntity;
 import ponggame.utility.Tween;
-import pongserver.network.PongServer;
+import pongserver.PongServer;
 import pongserver.utility.Data;
 import pongserver.utility.NetworkHelper;
 import pongserver.utility.NetworkHelper.Task;
