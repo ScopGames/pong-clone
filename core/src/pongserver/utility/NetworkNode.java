@@ -31,7 +31,7 @@ public class NetworkNode {
 	/**
 	 * Constructor overloading
 	 * 
-	 * Ip address is given as a String and converted into an InetAddress
+	 * IP address is given as a String and converted into an InetAddress
 	 * 
 	 * @param a
 	 * @param p
