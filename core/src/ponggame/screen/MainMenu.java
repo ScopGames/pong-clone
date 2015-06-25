@@ -303,30 +303,20 @@ public class MainMenu implements Screen, InputProcessor {
 		
 		final Thread t = new Thread(new ReceivingHandler(socket, connectionStatusLabel));
 		t.start();
-
+		
 		Timer timer = new Timer();			
-		float timeout = 5; // seconds
+		float timeout = 20; // seconds
 			
-		// TODO check if this works
 		timer.scheduleTask(new Timer.Task() 
 		{
 			@Override
 			public void run() 
 			{				
-				// If the server doesn't respond in 5 seconds, and the thread is
-				//alive, then interrupt the thread.
 				if(threadTask != Task.CONNECTED && t.isAlive())
-				{ 
-					t.interrupt();
+				{ 									
 					connectionStatusLabel.setText("No repsonse...");
-					System.out.println("Thread stopped");
 					submitIpButton.setTouchable(Touchable.enabled);
-				}				
-				//else means that: 
-				// - one player is connected and he is waiting for the other one
-				// to connect, doesn't interrupt the thread. 
-				// or
-				// -  both players are connected, the thread is finished.
+				}
 			}
 		}, timeout);
 	}
@@ -422,7 +412,7 @@ public class MainMenu implements Screen, InputProcessor {
 			tconnection.setText("Connecting...");
 			
 			DatagramPacket packet;
-						
+			
 			do
 			{
 				packet = NetworkHelper.receive(this.tsocket);
