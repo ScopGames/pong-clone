@@ -28,8 +28,8 @@ public class PongGame implements Screen
 	private final static int winningScore = 10;
 	public final static int fieldWidht = 640;
 	public final static int fieldHeight = 480;
-	public final static int ballSpeedX = 60*2; 
-	public final static int ballSpeedY = 25*2;
+	public final static int ballSpeedX = 60*8; 
+	public final static int ballSpeedY = 25*8;
 	
 	private SpriteBatch batch;
 	private OrthographicCamera camera;

@@ -127,11 +127,11 @@ public class PongServer
 		{		
 			if(ball.getPosition().x < 0f)
 			{	
-				score.addPoint(players.PLAYER1);
+				score.addPoint(players.PLAYER2);
 			}
 			else
 			{
-				score.addPoint(players.PLAYER2);
+				score.addPoint(players.PLAYER1);
 			}
 			gameEntity.setScore(score);
 			
