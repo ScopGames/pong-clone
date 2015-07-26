@@ -110,7 +110,7 @@ public class MainMenu implements Screen, InputProcessor {
 		textButtonStyle.down = skin.getDrawable("button_afa");
 		textButtonStyle.font = mainFont;
 		
-		singlePlayerButton = new TextButton("Single Player", textButtonStyle);
+		singlePlayerButton = new TextButton("Local Multiplayer", textButtonStyle);
 		singlePlayerButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -119,8 +119,8 @@ public class MainMenu implements Screen, InputProcessor {
 			}
 		});
 		
-		multiplayerButton = new TextButton("Multiplayer", textButtonStyle);
 		
+		multiplayerButton = new TextButton("Online Multiplayer", textButtonStyle);
 		TextFieldStyle textFieldStyle = new TextFieldStyle();
 		textFieldStyle.font = mainFont;
 		textFieldStyle.fontColor = new Color(1, 1, 0, 1);
